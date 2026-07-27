@@ -9,6 +9,9 @@ import logo from "@/public/assets/logoLH.png";
 import { FaEnvelope, FaEye, FaEyeSlash, FaLock } from "react-icons/fa";
 import { useState } from "react";
 import { ClipLoader } from "react-spinners";
+import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
+import { variantMotion } from "@/utils/variantMotion";
 
 const loginSchema = z.object({
   email: z.string().email("Veuillez entrer une adresse email valide"),
@@ -29,9 +32,13 @@ const Login = () => {
     resolver: zodResolver(loginSchema),
   });
 
+  const router = useRouter();
   const onSubmit = async (data: loginFormData) => {
     await new Promise((resolve) => setTimeout(resolve, 1000));
     console.log("Données du formulaire :", data);
+    if (data) {
+      router.push("/administration/dashboard");
+    }
   };
 
   return (
@@ -39,17 +46,47 @@ const Login = () => {
       <FormImage />
       <div className="flex flex-col justify-center px-[10%] md:px-28 relative h-full">
         <div className="absolute top-2 left-0 w-full flex justify-between py-6 px-10 items-center">
-          <Image src={logo} alt="" width={40} height={40} />
-          <h2 className="font-medium uppercase">login</h2>
+          <motion.div
+            variants={variantMotion("right", 0.1)}
+            initial="hidden"
+            animate="show"
+          >
+            <Image src={logo} alt="" width={40} height={40} />
+          </motion.div>
+          <motion.h2
+            variants={variantMotion("left", 0.1)}
+            initial="hidden"
+            animate="show"
+            className="font-medium uppercase"
+          >
+            login
+          </motion.h2>
         </div>
-        <h1 className="text-center text-4xl font-bold">Bonjour!</h1>
-        <p className="max-w-[85%] text-center mx-auto mt-3 text-muted-foreground text-sm">
+        <motion.h1
+          variants={variantMotion("up", 0.1)}
+          initial="hidden"
+          animate="show"
+          className="text-center text-4xl font-bold"
+        >
+          Bonjour!
+        </motion.h1>
+        <motion.p
+          variants={variantMotion("up", 0.3)}
+          initial="hidden"
+          animate="show"
+          className="max-w-[85%] text-center mx-auto mt-3 text-muted-foreground text-sm"
+        >
           Pour vous connecter à votre compte, renseigner votre adresse email et
           votre mot de passe
-        </p>
+        </motion.p>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="mt-14 flex flex-col gap-[25px]">
-            <div className="relative">
+            <motion.div
+              variants={variantMotion("up", 0.5)}
+              initial="hidden"
+              animate="show"
+              className="relative"
+            >
               <div className="absolute left-[15px] text-muted-foreground top-0 bottom-0 flex items-center">
                 <FaEnvelope className="text-muted-foreground text-sm" />
               </div>
@@ -68,8 +105,13 @@ const Login = () => {
                   {errors.email.message}
                 </p>
               )}
-            </div>
-            <div className="relative">
+            </motion.div>
+            <motion.div
+              variants={variantMotion("up", 0.7)}
+              initial="hidden"
+              animate="show"
+              className="relative"
+            >
               <div className="absolute left-[15px] text-muted-foreground top-0 bottom-0 flex items-center">
                 <FaLock className="text-muted-foreground text-sm" />
               </div>
@@ -101,27 +143,38 @@ const Login = () => {
                   {errors.password.message}
                 </p>
               )}
-            </div>
+            </motion.div>
           </div>
-          <p className="text-muted-foreground text-xs mt-2 hover:underline cursor-pointer">
-            Mot de passe oublié?
-          </p>
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="w-full bg-primary text-primary-foreground rounded-lg py-3 font-medium mt-6 cursor-pointer"
+          <motion.p
+            variants={variantMotion("up", 0.9)}
+            initial="hidden"
+            animate="show"
+            className="text-muted-foreground text-xs mt-2 hover:underline cursor-pointer"
           >
-            {isSubmitting ? (
-              <ClipLoader
-                loading={isSubmitting}
-                color={'var(--principal)'}
-                size={20}
-                aria-label="connexion..."
-              />
-            ) : (
-              "Se connecter"
-            )}
-          </button>
+            Mot de passe oublié?
+          </motion.p>
+          <motion.div
+            variants={variantMotion("up", 0.9)}
+            initial="hidden"
+            animate="show"
+          >
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full bg-primary text-primary-foreground rounded-lg py-3 font-medium mt-5 cursor-pointer active:scale-90 transition-transform duration-300"
+            >
+              {isSubmitting ? (
+                <ClipLoader
+                  loading={isSubmitting}
+                  color={"var(--principal)"}
+                  size={20}
+                  aria-label="connexion..."
+                />
+              ) : (
+                "Se connecter"
+              )}
+            </button>
+          </motion.div>
         </form>
       </div>
     </div>
