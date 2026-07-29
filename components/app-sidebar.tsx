@@ -76,7 +76,7 @@ export function AppSidebar() {
               <span className="font-bold leading-none text-xl text-principal">
                 Landia Hostel
               </span>
-              <span className="text-sm leading-none">Management</span>
+              <span className="text-sm leading-none mt-1">Management</span>
             </div>
             <SidebarTrigger />
           </motion.div>
@@ -108,8 +108,8 @@ export function AppSidebar() {
                   <SidebarMenuItem key={item.title}>
                     <Link href={item.url}>
                       <SidebarMenuButton
-                        className={`py-6 cursor-pointer px-8 transition-all ease-in duration-200 active:scale-85 hover:bg-primary/30 hover:text-primary
-                          ${isActive && "bg-principal/80 text-primary-foreground hover:bg-principal/80 hover:text-primary-foreground active:text-primary-foreground active:bg-principal/80"}`}
+                        className={`py-6 cursor-pointer px-8 transition-all ease-in duration-200 active:scale-85 hover:bg-primary/30 hover:text-primary font-medium
+                          ${isActive && "bg-principal/80 text-primary-foreground hover:bg-principal/80 hover:text-primary-foreground active:text-primary-foreground active:bg-principal/80 font-bold"}`}
                       >
                         <item.icon className="h-4 w-4" />
                         <span>{item.title}</span>
