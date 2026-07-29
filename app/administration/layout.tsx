@@ -10,7 +10,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
       <main className="flex-1 bg-background text-foreground">
         <Navbar />
-        {children}
+        <div className="w-full px-2 md:px-4">
+          <div className="max-w-[1200px] mx-auto">
+            {children}
+          </div>
+        </div>
       </main>
     </SidebarProvider>
   );
