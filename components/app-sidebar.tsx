@@ -51,17 +51,15 @@ export function AppSidebar() {
   console.log(pathname);
   return (
     <Sidebar collapsible="icon">
-      <SidebarHeader className="p-0 mt-2">
+      <SidebarHeader className="p-0 mt-6">
         {open ? (
           <motion.div
             variants={{
               hidden: {
                 opacity: 0,
-                x: -50,
               },
               show: {
                 opacity: 1,
-                x: 0,
                 transition: {
                   delay: 0.2,
                   duration: 0.5,
@@ -73,10 +71,10 @@ export function AppSidebar() {
             className="flex h-14 items-center justify-between pr-2"
           >
             <div className="flex flex-col items-start ml-5">
-              <span className="font-bold leading-none text-xl text-principal">
+              <span className="font-bold leading-none text-lg text-principal">
                 Landia Hostel
               </span>
-              <span className="text-sm leading-none mt-1">Management</span>
+              <span className="text-xs leading-none">Management</span>
             </div>
             <SidebarTrigger />
           </motion.div>
@@ -96,11 +94,8 @@ export function AppSidebar() {
       </SidebarHeader>
 
       <SidebarContent>
-        <SidebarGroup className="mt-3">
+        <SidebarGroup className="mt-5">
           <SidebarGroupContent>
-            <SidebarGroupLabel className="text-muted-foreground">
-              Navigation
-            </SidebarGroupLabel>
             <SidebarMenu className="space-y-1.5 mt-1">
               {items.map((item) => {
                 const isActive = pathname.startsWith(item.url);
@@ -108,10 +103,10 @@ export function AppSidebar() {
                   <SidebarMenuItem key={item.title}>
                     <Link href={item.url}>
                       <SidebarMenuButton
-                        className={`py-6 cursor-pointer px-8 transition-all ease-in duration-200 active:scale-85 hover:bg-primary/30 hover:text-primary font-medium
-                          ${isActive && "bg-principal/80 text-primary-foreground hover:bg-principal/80 hover:text-primary-foreground active:text-primary-foreground active:bg-principal/80 font-bold"}`}
+                        className={`py-6 rounded cursor-pointer px-8 transition-all ease-in duration-200 active:scale-85 hover:bg-primary/30 hover:text-primary flex items-center text-[13px]
+                          ${isActive && "bg-principal/80 text-primary-foreground hover:bg-principal/80 hover:text-primary-foreground active:text-primary-foreground active:bg-principal/80 font-semibold"}`}
                       >
-                        <item.icon className="h-4 w-4" />
+                        <item.icon className="h-3 w-3 mr-3" />
                         <span>{item.title}</span>
                       </SidebarMenuButton>
                     </Link>
