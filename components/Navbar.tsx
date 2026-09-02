@@ -42,9 +42,9 @@ const Navbar = () => {
       <div className="flex items-center gap-3">
         <DropdownMenu>
         <DropdownMenuTrigger>
-          <div className="relative border border-border rounded-md p-1.5 flex items-center justify-center bg-muted cursor-pointer">
-            <HiOutlineSun className="h-5 w-5 rotate-0 scale-100 transition-all duration-300 dark:-rotate-90 dark:scale-0" />
-            <HiOutlineMoon className="absolute h-5 w-5 rotate-90 scale-0 transition-all duration-300 dark:rotate-0 dark:scale-100" />
+          <div className="relative border border-border rounded-md p-2 flex items-center justify-center bg-muted cursor-pointer">
+            <HiOutlineSun className="h-4 w-4 rotate-0 scale-100 transition-all duration-300 dark:-rotate-90 dark:scale-0" />
+            <HiOutlineMoon className="absolute h-4 w-4 rotate-90 scale-0 transition-all duration-300 dark:rotate-0 dark:scale-100" />
           </div>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
