@@ -9,7 +9,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { ClipLoader } from "react-spinners";
 import { IoMdAddCircle, IoMdAddCircleOutline } from "react-icons/io";
-import Image from "next/image";
 import { BiChevronsDown } from "react-icons/bi";
 import { CgChevronDown } from "react-icons/cg";
 import SelectType from "../components/SelectType";
@@ -22,7 +21,6 @@ import {
 } from "@/components/ui/select";
 import AddImages from "../components/AddImages";
 
-// https://dribbble.com/shots/27649818-E-commerce-Branding-Management-Flow-Seller-Admin-UI
 
 type typeType = {
   id: string;
@@ -98,6 +96,22 @@ const AddChambre = () => {
     return "";
   };
 
+  const resetImages = () => {
+    setSelectedImages(null);
+    setFiles({
+      image1: "",
+      image2: "",
+      image3: "",
+      image4: "",
+    });
+    setPreview({
+      image1: "",
+      image2: "",
+      image3: "",
+      image4: "",
+    });
+  };
+
   const [focus, setFocus] = useState({
     nom: false,
     prix: false,
@@ -133,7 +147,9 @@ const AddChambre = () => {
 
   return (
     <div>
-      <div className="hidden sm:block"><TextHeading descriptions={descriptions} /></div>
+      <div className="hidden sm:block">
+        <TextHeading descriptions={descriptions} />
+      </div>
       <form
         onSubmit={handleSubmit(submitData)}
         ref={ref}
@@ -157,6 +173,7 @@ const AddChambre = () => {
                 preview={preview}
                 selectedImages={selectedImages}
                 setSelectedImages={setSelectedImages}
+                resetImages={resetImages}
                 height="180px"
               />
             </div>
@@ -165,7 +182,7 @@ const AddChambre = () => {
           <div className="flex flex-col sm:flex-row gap-[10px] w-full mt-8 items-start">
             <div className="flex-1 relative w-full">
               <label
-                className={`mb-1 absolute text-[12px] ml-2 bg-background  px-3
+                className={`mb-1 absolute text-[12px] ml-2 bg-card  px-3
                   ${focus.nom ? "top-[-10px] text-foreground font-semibold" : "top-[11px] text-muted-foreground capitalize"} transition-all duration-400`}
               >
                 nom
@@ -195,7 +212,7 @@ const AddChambre = () => {
             </div>
             <div className="flex-1 relative w-full">
               <label
-                className={`mb-1 absolute text-[12px] ml-2 bg-background  px-3
+                className={`mb-1 absolute text-[12px] ml-2 bg-card  px-3
                   ${focus.prix ? "top-[-10px] text-foreground font-semibold" : "top-[11px] text-muted-foreground capitalize"} transition-all duration-400`}
               >
                 prix
@@ -230,7 +247,7 @@ const AddChambre = () => {
           <div className="flex flex-col sm:flex-row gap-[10px] w-full mt-[10px] sm:mt-8 items-start">
             <div className="flex-1 relative w-full">
               <label
-                className={`mb-1 absolute text-[12px] ml-2 bg-background  px-3
+                className={`mb-1 absolute text-[12px] ml-2 bg-card  px-3
                   ${focus.type ? "top-[-10px] text-foreground font-semibold" : "top-[11px] text-muted-foreground capitalize"} transition-all duration-400`}
               >
                 type
@@ -281,10 +298,10 @@ const AddChambre = () => {
                 render={({ field }) => (
                   <Select value={field.value} onValueChange={field.onChange}>
                     <SelectTrigger className="w-full rounded! border h-auto! px-4 py-3 outline-none text-xs">
-                      <SelectValue placeholder="Sélectionnez un état" />
+                      <SelectValue placeholder="Sélectionnez un état"/>
                     </SelectTrigger>
 
-                    <SelectContent>
+                    <SelectContent >
                       <SelectItem
                         value="disponible"
                         className="py-3 px-3 text-xs"
@@ -320,7 +337,7 @@ const AddChambre = () => {
           <div className="mt-[10px] sm:mt-8 relative w-full">
             <div className="flex-1 relative">
               <label
-                className={`mb-1 absolute text-[12px] ml-2 bg-background  px-3 
+                className={`mb-1 absolute text-[12px] ml-2 bg-card  px-3 
                   ${focus.desc ? "top-[-10px] text-foreground font-semibold" : "top-[20px] text-muted-foreground capitalize"} transition-all duration-400`}
               >
                 description
@@ -379,7 +396,8 @@ const AddChambre = () => {
             preview={preview}
             selectedImages={selectedImages}
             setSelectedImages={setSelectedImages}
-            height="250px"
+            resetImages={resetImages}
+            height="200px"
           />
         </div>
       </form>
