@@ -14,6 +14,7 @@ import { FaSignOutAlt, FaUser } from "react-icons/fa";
 import { useTheme } from "next-themes";
 import { HiOutlineSun, HiOutlineMoon } from "react-icons/hi2";
 import { Button } from "./ui/button";
+import { SidebarTrigger } from "./ui/sidebar";
 
 const Navbar = () => {
   const buttonTrigger = (
@@ -36,12 +37,14 @@ const Navbar = () => {
   console.log("theme : ", theme);
 
   return (
-    <div className="w-full h-[70px] flex justify-end items-center px-12 gap-3">
-      <DropdownMenu>
+    <div className="w-full h-[70px] flex justify-between md:justify-end items-center px-4 md:px-12 gap-3">
+      <SidebarTrigger className="md:hidden" />
+      <div className="flex items-center gap-3">
+        <DropdownMenu>
         <DropdownMenuTrigger>
-          <div className="relative border border-border rounded-md p-1.5 flex items-center justify-center bg-muted cursor-pointer">
-            <HiOutlineSun className="h-5 w-5 rotate-0 scale-100 transition-all duration-300 dark:-rotate-90 dark:scale-0" />
-            <HiOutlineMoon className="absolute h-5 w-5 rotate-90 scale-0 transition-all duration-300 dark:rotate-0 dark:scale-100" />
+          <div className="relative border border-border rounded-md p-2 flex items-center justify-center bg-muted cursor-pointer">
+            <HiOutlineSun className="h-4 w-4 rotate-0 scale-100 transition-all duration-300 dark:-rotate-90 dark:scale-0" />
+            <HiOutlineMoon className="absolute h-4 w-4 rotate-90 scale-0 transition-all duration-300 dark:rotate-0 dark:scale-100" />
           </div>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
@@ -75,6 +78,7 @@ const Navbar = () => {
           </DropdownMenuGroup>
         </DropdownMenuContent>
       </DropdownMenu>
+      </div>
     </div>
   );
 };
