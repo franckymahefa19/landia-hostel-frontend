@@ -27,7 +27,7 @@ export function ViewClient({
       <SheetTrigger>{trigger}</SheetTrigger>
       <SheetContent className="overflow-y-auto">
         <SheetHeader>
-          <SheetTitle>Detail du chambre</SheetTitle>
+          <SheetTitle>Detail du client</SheetTitle>
         </SheetHeader>
         <div className="px-3 pl-6 mb-4">
           <h2 className="text-muted-foreground text-xs">Image</h2>

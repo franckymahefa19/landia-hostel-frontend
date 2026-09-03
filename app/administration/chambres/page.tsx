@@ -61,7 +61,7 @@ const Chambres = () => {
 
   return (
     <div>
-      <TextHeading descriptions={descriptions} />
+      <TextHeading title="chambres" descriptions={descriptions} />
       <div className="mt-6 w-full flex flex-col-reverse lg:flex-row lg:justify-between lg:items-end text-sm">
         <div className="flex items-end gap-3 text-sm">
           <h2 className="text-primary">Toutes les chambres</h2>

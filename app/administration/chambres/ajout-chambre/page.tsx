@@ -148,7 +148,7 @@ const AddChambre = () => {
   return (
     <div>
       <div className="hidden sm:block">
-        <TextHeading descriptions={descriptions} />
+        <TextHeading title="chambres" descriptions={descriptions} />
       </div>
       <form
         onSubmit={handleSubmit(submitData)}

@@ -8,7 +8,14 @@ import { clientdescriptions } from "../page";
 import { useState } from "react";
 import { FaHandPointUp } from "react-icons/fa";
 import Image from "next/image";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { ClipLoader } from "react-spinners";
 
 export const clientSchema = z.object({
   nom: z
@@ -104,11 +111,11 @@ const AjoutClient = () => {
   return (
     <div>
       <div className="hidden sm:block">
-        <TextHeading descriptions={clientdescriptions} />
+        <TextHeading title="clients" descriptions={clientdescriptions} />
       </div>
       <form
         onSubmit={handleSubmit(submitData)}
-        className={`mt-6 max-w-[1000px] mx-auto mb-5 sm:mt-20 rounded-lg bg-card shadow p-4`}
+        className={`mt-6 max-w-[1000px] mx-auto mb-5 sm:mt-14 rounded-lg bg-card shadow p-4`}
       >
         <h2 className="text-primary text-md">Ajouter un client</h2>
         <p className="text-[10px] text-muted-foreground">
@@ -144,13 +151,15 @@ const AjoutClient = () => {
         <div className="flex flex-col sm:flex-row gap-[10px] w-full mt-8 items-start">
           <div className="flex-1 relative w-full">
             <label
-              className={`mb-1 absolute text-[12px] ml-2 bg-card  px-3
+              htmlFor="nom"
+              className={`mb-1 absolute text-[12px] ml-2 bg-card  px-3 cursor-text
                   ${focus.nom ? "top-[-10px] text-foreground font-semibold" : "top-[11px] text-muted-foreground capitalize"} transition-all duration-400`}
             >
               nom
             </label>
 
             <input
+              id="nom"
               type="text"
               {...register("nom")}
               onFocus={() => setFocus({ ...focus, nom: true })}
@@ -172,13 +181,15 @@ const AjoutClient = () => {
           </div>
           <div className="flex-1 relative w-full">
             <label
-              className={`mb-1 absolute text-[12px] ml-2 bg-card  px-3
+              htmlFor="prenoms"
+              className={`mb-1 absolute text-[12px] ml-2 bg-card  px-3 cursor-text
                   ${focus.prenoms ? "top-[-10px] text-foreground font-semibold" : "top-[11px] text-muted-foreground capitalize"} transition-all duration-400`}
             >
-              Prenoms
+              prenoms
             </label>
 
             <input
+              id="prenoms"
               type="text"
               {...register("prenoms")}
               onFocus={() => setFocus({ ...focus, prenoms: true })}
@@ -203,50 +214,43 @@ const AjoutClient = () => {
         </div>
 
         <div className="flex flex-col sm:flex-row gap-[10px] w-full mt-8 items-start">
-           <div className="flex-1 relative w-full">
-              <Controller
-                name="sexe"
-                control={control}
-                render={({ field }) => (
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger className="w-full rounded! border h-auto! px-4 py-3 outline-none text-xs">
-                      <SelectValue placeholder="Sexe" />
-                    </SelectTrigger>
+          <div className="flex-1 relative w-full">
+            <Controller
+              name="sexe"
+              control={control}
+              render={({ field }) => (
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <SelectTrigger className="w-full rounded! border h-auto! px-4 py-3 outline-none text-xs">
+                    <SelectValue placeholder="Sexe" />
+                  </SelectTrigger>
 
-                    <SelectContent >
-                      <SelectItem
-                        value="Homme"
-                        className="py-3 px-3 text-xs"
-                        
-                      >
-                        Homme
-                      </SelectItem>
+                  <SelectContent>
+                    <SelectItem value="Homme" className="py-3 px-3 text-xs">
+                      Homme
+                    </SelectItem>
 
-                      <SelectItem
-                        value="Femme"
-                        className="py-3 px-3 text-xs"
-                      >
-                        Femme
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                )}
-              />
-              {errors.sexe && (
-                <p className=" text-[10px] text-red-500">
-                  {errors.sexe.message}
-                </p>
+                    <SelectItem value="Femme" className="py-3 px-3 text-xs">
+                      Femme
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
               )}
-            </div>
+            />
+            {errors.sexe && (
+              <p className=" text-[10px] text-red-500">{errors.sexe.message}</p>
+            )}
+          </div>
           <div className="flex-1 relative w-full">
             <label
-              className={`mb-1 absolute text-[12px] ml-2 bg-card  px-3
+              htmlFor="email"
+              className={`mb-1 absolute text-[12px] ml-2 bg-card  px-3 cursor-text
                   ${focus.email ? "top-[-10px] text-foreground font-semibold" : "top-[11px] text-muted-foreground capitalize"} transition-all duration-400`}
             >
-              Email
+              email
             </label>
 
             <input
+              id="email"
               type="text"
               {...register("email")}
               onFocus={() => setFocus({ ...focus, email: true })}
@@ -266,6 +270,125 @@ const AjoutClient = () => {
                 {errors.email.message}
               </p>
             )}
+          </div>
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-[10px] w-full mt-8 items-start">
+          <div className="flex-1 relative w-full">
+            <label
+              htmlFor="adresse"
+              className={`mb-1 absolute text-[12px] ml-2 bg-card  px-3 cursor-text
+                  ${focus.adresse ? "top-[-10px] text-foreground font-semibold" : "top-[11px] text-muted-foreground capitalize"} transition-all duration-400`}
+            >
+              adresse
+            </label>
+
+            <input
+              id="adresse"
+              type="text"
+              {...register("adresse")}
+              onFocus={() => setFocus({ ...focus, adresse: true })}
+              onBlur={() => {
+                const adresse = getValues("adresse");
+
+                if (adresse.trim() === "") {
+                  setFocus({ ...focus, adresse: false });
+                } else {
+                  setFocus({ ...focus, adresse: true });
+                }
+              }}
+              className="w-full rounded border px-4 py-3 outline-none text-xs"
+            />
+
+            {errors.adresse && (
+              <p className=" text-[10px] text-red-500">
+                {errors.adresse.message}
+              </p>
+            )}
+          </div>
+          <div className="flex-1 relative w-full">
+            <label
+              htmlFor="phone"
+              className={`mb-1 absolute text-[12px] ml-2 bg-card  px-3 cursor-text
+                  ${focus.tel ? "top-[-10px] text-foreground font-semibold" : "top-[11px] text-muted-foreground capitalize"} transition-all duration-400`}
+            >
+              phone
+            </label>
+
+            <input
+              id="phone"
+              type="text"
+              {...register("tel")}
+              onFocus={() => setFocus({ ...focus, tel: true })}
+              onBlur={() => {
+                const tel = getValues("tel");
+
+                if (tel.trim() === "") {
+                  setFocus({ ...focus, tel: false });
+                } else {
+                  setFocus({ ...focus, tel: true });
+                }
+              }}
+              className="w-full rounded border px-4 py-3 outline-none text-xs"
+            />
+
+            {errors.tel && (
+              <p className=" text-[10px] text-red-500">{errors.tel.message}</p>
+            )}
+          </div>
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-[10px] w-full mt-8 items-start">
+          <div className="flex-1 relative w-full">
+            <label
+              htmlFor="nationalite"
+              className={`mb-1 absolute text-[12px] ml-2 bg-card  px-3 cursor-text
+                  ${focus.nationalite ? "top-[-10px] text-foreground font-semibold" : "top-[11px] text-muted-foreground capitalize"} transition-all duration-400`}
+            >
+              nationalité
+            </label>
+
+            <input
+              id="nationalite"
+              type="text"
+              {...register("nationalite")}
+              onFocus={() => setFocus({ ...focus, nationalite: true })}
+              onBlur={() => {
+                const nationalite = getValues("nationalite");
+
+                if (nationalite.trim() === "") {
+                  setFocus({ ...focus, nationalite: false });
+                } else {
+                  setFocus({ ...focus, nationalite: true });
+                }
+              }}
+              className="w-full rounded border px-4 py-3 outline-none text-xs"
+            />
+
+            {errors.nationalite && (
+              <p className=" text-[10px] text-red-500">
+                {errors.nationalite.message}
+              </p>
+            )}
+          </div>
+          <div className="flex-1 relative w-full">
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className={`rounded-md bg-principal px-4 py-2 text-white disabled:opacity-60 font-semibold w-[60%] block mx-auto
+                ${isSubmitting ? "scale-95" : ""} transition-transform duration-1000`}
+            >
+              {isSubmitting ? (
+                <ClipLoader
+                  loading={isSubmitting}
+                  color={"var(--primary)"}
+                  size={20}
+                  aria-label="connexion..."
+                />
+              ) : (
+                "Ajouter"
+              )}
+            </button>
           </div>
         </div>
       </form>
