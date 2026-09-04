@@ -18,7 +18,7 @@ export default function Home() {
   const router = useRouter();
   return (
     <div className="relative">
-      <div className="w-full h-screen lg:h-[80vh] relative flex items-center bg-black">
+      <div className="w-full h-screen lg:h-[80vh] relative flex items-center">
         <Image
           src="https://plus.unsplash.com/premium_photo-1661884238187-1c274b3c3413?q=80&w=1332&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
           alt=""
@@ -87,7 +87,7 @@ export default function Home() {
           initial="hidden"
           whileInView="show"
           viewport={{ amount: 0.2, once: false }}
-          className="lg:max-w-[400px] py-4 px-4 rounded-lg border border-principal bg-white flex flex-col justify-center items-center flex-1"
+          className="lg:max-w-[400px] py-4 px-4 rounded-lg border shadow bg-card flex flex-col justify-center items-center flex-1"
         >
           <FaBed size={35} className="mb-3 text-principal" />
           <h2 className="text-xl text-center font-bold">
@@ -103,7 +103,7 @@ export default function Home() {
           initial="hidden"
           whileInView="show"
           viewport={{ amount: 0.2, once: false }}
-          className="lg:max-w-[400px] py-4 px-4 rounded-lg border border-principal bg-white flex flex-col justify-center items-center flex-1"
+          className="lg:max-w-[400px] py-4 px-4 rounded-lg shadow bg-card flex flex-col justify-center items-center flex-1"
         >
           <FaCalendar size={35} className="mb-3 text-principal" />
           <h2 className="text-xl text-center font-bold">
@@ -119,7 +119,7 @@ export default function Home() {
           initial="hidden"
           whileInView="show"
           viewport={{ amount: 0.2, once: false }}
-          className="lg:max-w-[400px] py-4 px-4 rounded-lg border border-principal bg-white flex flex-col justify-center items-center flex-1"
+          className="lg:max-w-[400px] py-4 px-4 rounded-lg shadow bg-card flex flex-col justify-center items-center flex-1"
         >
           <FaUser size={35} className="mb-3 text-principal" />
           <h2 className="text-xl text-center font-bold">Gestion des clients</h2>

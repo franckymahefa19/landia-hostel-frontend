@@ -42,7 +42,7 @@ const Login = () => {
   };
 
   return (
-    <div className="w-[90%] sm:w-[70%] xl:w-[85%] h-[600px] mx-auto bg-white shadow rounded-xl xl:grid xl:grid-cols-2 overflow-hidden">
+    <div className="w-[90%] sm:w-[70%] xl:w-[85%] h-[600px] mx-auto bg-background shadow rounded-xl xl:grid xl:grid-cols-2 overflow-hidden">
       <FormImage />
       <div className="flex flex-col justify-center px-[10%] md:px-28 relative h-full">
         <div className="absolute top-2 left-0 w-full flex justify-between py-6 px-10 items-center">
@@ -66,7 +66,7 @@ const Login = () => {
           variants={variantMotion("up", 0.1)}
           initial="hidden"
           animate="show"
-          className="text-center text-4xl font-bold"
+          className="text-center text-4xl font-bold text-principal"
         >
           Bonjour!
         </motion.h1>
@@ -80,7 +80,7 @@ const Login = () => {
           votre mot de passe
         </motion.p>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="mt-14 flex flex-col gap-[25px]">
+          <div className="mt-14 flex flex-col">
             <motion.div
               variants={variantMotion("up", 0.5)}
               initial="hidden"
@@ -97,7 +97,8 @@ const Login = () => {
                 placeholder="Votre email"
                 className="px-6 pl-12 py-4 text-sm bg-muted w-full rounded-xl outline-none"
               />
-              {errors.email && (
+            </motion.div>
+             {errors.email && (
                 <p
                   style={{ color: "red", margin: "3px 0 0" }}
                   className="text-[10px]"
@@ -105,12 +106,11 @@ const Login = () => {
                   {errors.email.message}
                 </p>
               )}
-            </motion.div>
             <motion.div
               variants={variantMotion("up", 0.7)}
               initial="hidden"
               animate="show"
-              className="relative"
+              className="relative mt-[25px]"
             >
               <div className="absolute left-[15px] text-muted-foreground top-0 bottom-0 flex items-center">
                 <FaLock className="text-muted-foreground text-sm" />
@@ -135,7 +135,8 @@ const Login = () => {
                 placeholder="Votre mot de passe"
                 className="px-6 pl-12 py-4 text-sm bg-muted w-full rounded-xl outline-none"
               />
-              {errors.password && (
+            </motion.div>
+             {errors.password && (
                 <p
                   style={{ color: "red", margin: "4px 0 0" }}
                   className="text-[10px]"
@@ -143,7 +144,6 @@ const Login = () => {
                   {errors.password.message}
                 </p>
               )}
-            </motion.div>
           </div>
           <motion.p
             variants={variantMotion("up", 0.9)}
@@ -161,12 +161,12 @@ const Login = () => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-primary text-primary-foreground rounded-lg py-3 font-medium mt-5 cursor-pointer active:scale-90 transition-transform duration-300"
+              className="w-full bg-principal text-white rounded-lg py-3 font-medium mt-5 cursor-pointer active:scale-90 transition-transform duration-300"
             >
               {isSubmitting ? (
                 <ClipLoader
                   loading={isSubmitting}
-                  color={"var(--principal)"}
+                  color="violet"
                   size={20}
                   aria-label="connexion..."
                 />

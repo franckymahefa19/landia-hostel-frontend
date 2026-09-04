@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { Pagination } from "@/components/Pagination";
 import TextHeading from "@/components/TextHeading";
@@ -11,6 +11,8 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { FaEdit, FaEye, FaSearch, FaTrash } from "react-icons/fa";
 import { IoAdd } from "react-icons/io5";
+import { ViewChambre } from "./components/ViewChambre";
+import { DeleteAlert } from "../components/DeleteAlert";
 
 export const descriptions = [
   "Gérez efficacement l'ensemble de vos chambres",
@@ -52,15 +54,14 @@ const fakeChambre = [
 ];
 
 const Chambres = () => {
+  const router = useRouter();
 
-  const router = useRouter()
-
-  const [currentPage, setCurrentPage] = useState<number>(1)
-  const totalPages = 8
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const totalPages = 8;
 
   return (
     <div>
-      <TextHeading descriptions={descriptions} />
+      <TextHeading title="chambres" descriptions={descriptions} />
       <div className="mt-6 w-full flex flex-col-reverse lg:flex-row lg:justify-between lg:items-end text-sm">
         <div className="flex items-end gap-3 text-sm">
           <h2 className="text-primary">Toutes les chambres</h2>
@@ -68,18 +69,21 @@ const Chambres = () => {
             1 555 résultats
           </p>
         </div>
-        <div className="flex gap-2 sm:gap-3 items-center self-center lg:self-end mb-3 lg:mb-0">
+        <div className="flex gap-2 sm:gap-3 self-center lg:self-end mb-3 lg:mb-0">
           <button
-          onClick={()=>router.push('/administration/chambres/ajout-chambre')}
-           className="flex justify-center items-center gap-2 text-primary-foreground bg-primary rounded-lg px-4 py-2.5 cursor-pointer text-xs font-medium active:scale-95 duration-150">
+            onClick={() =>
+              router.push("/administration/chambres/ajout-chambre")
+            }
+            className="flex justify-center items-center gap-2 text-primary-foreground bg-primary rounded-lg px-4 py-2.5 cursor-pointer text-xs font-medium active:scale-95 duration-150"
+          >
             <IoAdd size={16} className="font-bold" />
             <span className="hidden lg:block">Ajouter une chambre</span>
           </button>
           <div className="max-w-[180px] sm:max-w-[250px] gap-2 border border-border rounded-md flex items-center px-3 overflow-hidden">
-            <FaSearch size={15} color="text-primary" />
+            <FaSearch size={15} className="text-muted-foreground" />
             <input
               type="text"
-              className="py-3 px-3 flex-1 outline-none min-w-0"
+              className="py-3 px-1 flex-1 outline-none min-w-0 text-xs"
               placeholder="Entrer le nom de la chambre"
             />
           </div>
@@ -123,31 +127,42 @@ const Chambres = () => {
                         group
                       "
             >
-              <div className="text-sm text-foreground/70 group-hover:text-foreground transition-colors duration-300">{chambre.nom}</div>
-              <div className="text-sm text-foreground/70 group-hover:text-foreground transition-colors duration-300">{chambre.type}</div>
-              <div className="text-sm text-foreground/70 group-hover:text-foreground transition-colors duration-300">{chambre.etat}</div>
+              <div className="text-sm text-foreground/70 group-hover:text-foreground transition-colors duration-300">
+                {chambre.nom}
+              </div>
+              <div className="text-sm text-foreground/70 group-hover:text-foreground transition-colors duration-300">
+                {chambre.type}
+              </div>
+              <div className="text-sm text-foreground/70 group-hover:text-foreground transition-colors duration-300">
+                {chambre.etat}
+              </div>
 
               <div className="flex justify-center items-center gap-2">
-                <Tooltip>
-                  <TooltipTrigger
-                    render={
-                      <FaEye
-                        size={12}
-                        className="opacity-15 group-hover:opacity-100 transition-all duration-700 text-muted-foreground group-hover:text-green-500"
+                <ViewChambre
+                  trigger={
+                    <Tooltip>
+                      <TooltipTrigger
+                        render={
+                          <FaEye
+                            size={12}
+                            className="opacity-15 group-hover:opacity-100 transition-all duration-700 text-muted-foreground group-hover:text-green-500 cursor-pointer"
+                          />
+                        }
                       />
-                    }
-                  />
-                  <TooltipContent>
-                    <p className="text-[10px]">Voir détails</p>
-                  </TooltipContent>
-                </Tooltip>
+                      <TooltipContent>
+                        <p className="text-[10px]">Voir détails</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  }
+                  chambre={chambre}
+                />
 
                 <Tooltip>
                   <TooltipTrigger
                     render={
                       <FaEdit
                         size={12}
-                        className="opacity-15 group-hover:opacity-100 transition-all duration-700 text-muted-foreground group-hover:text-blue-500"
+                        className="opacity-15 group-hover:opacity-100 transition-all duration-700 text-muted-foreground group-hover:text-blue-500 cursor-pointer"
                       />
                     }
                   />
@@ -156,32 +171,36 @@ const Chambres = () => {
                   </TooltipContent>
                 </Tooltip>
 
-                <Tooltip>
-                  <TooltipTrigger
-                    render={
-                      <FaTrash
-                        size={12}
-                        className="opacity-15 group-hover:opacity-100 transition-all duration-700 text-muted-foreground group-hover:text-destructive"
+                <DeleteAlert
+                  trigger={
+                    <Tooltip>
+                      <TooltipTrigger
+                        render={
+                          <FaTrash
+                            size={12}
+                            className="opacity-15 group-hover:opacity-100 transition-all duration-700 text-muted-foreground group-hover:text-destructive cursor-pointer"
+                          />
+                        }
                       />
-                    }
-                  />
-                  <TooltipContent>
-                    <p className="text-[10px]">Supprimer</p>
-                  </TooltipContent>
-                </Tooltip>
+                      <TooltipContent>
+                        <p className="text-[10px]">Supprimer</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  }
+                />
               </div>
             </div>
           ))}
         </div>
       </div>
 
-       <div className="mt-4">
+      <div className="mt-4">
         <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={(page) => setCurrentPage(page)}
-      />
-       </div>
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={(page) => setCurrentPage(page)}
+        />
+      </div>
     </div>
   );
 };

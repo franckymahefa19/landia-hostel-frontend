@@ -1,12 +1,13 @@
 "use client";
 import Typewriter from "typewriter-effect";
 
-const TextHeading = ({ descriptions }: {
+const TextHeading = ({ title, descriptions }: {
+    title: string;
     descriptions: string[]
 }) => {
   return (
     <div>
-        <h1 className="font-bold text-lg">Gestion des chambres</h1>
+        <h1 className="font-bold text-lg">Gestion des {title}</h1>
         <span className="text-xs text-muted-foreground">
           <Typewriter
             options={{

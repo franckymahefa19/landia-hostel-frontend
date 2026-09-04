@@ -1,30 +1,38 @@
 import Image from "next/image";
 import React from "react";
 import { IoMdAddCircleOutline } from "react-icons/io";
+import { IoTrash } from "react-icons/io5";
 
 type AddImagesProps = {
-    isMobile: boolean;
-    files: any;
-    selectedImages: string;
-    setSelectedImages: (image: string)=>void
-    changeImage: ()=>string;
-    handleFileChange: (e: any, index: number)=>void;
-    preview: any;
-    height: string
-}
+  isMobile: boolean;
+  files: any;
+  selectedImages: string;
+  setSelectedImages: (image: string | null) => void;
+  changeImage: () => string;
+  handleFileChange: (e: any, index: number) => void;
+  preview: any;
+  height: string;
+  resetImages: ()=>void;
+};
 
 const AddImages = ({
-    height,
-    files,
-    selectedImages,
-    setSelectedImages,
-    changeImage,
-    handleFileChange,
-    preview
+  height,
+  files,
+  selectedImages,
+  setSelectedImages,
+  changeImage,
+  handleFileChange,
+  preview,
+  resetImages
 }: AddImagesProps) => {
+
+   
   return (
     <>
-      <div className="w-full rounded-lg bg-muted relative" style={{height: height}}>
+      <div
+        className="w-full rounded-lg bg-muted relative"
+        style={{ height: height }}
+      >
         {files.image1 !== "" ? (
           selectedImages && (
             <Image
@@ -167,6 +175,20 @@ const AddImages = ({
             )}
           </div>
         )}
+      </div>
+      <div className="w-full text-center mt-3">
+        <button
+          type="button"
+          onClick={resetImages}
+          className={`inline-flex items-center justify-center gap-1.5 text-xs font-medium text-destructive
+           bg-destructive/10 hover:bg-destructive border border-destructive/30 hover:border-transparent py-1.5 px-8 
+           rounded-md transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 
+           focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none cursor-pointer
+           ${files.image1 === "" ? 'bg-muted text-muted-foreground border border-muted hover:bg-muted hover:text-muted-foreground' : 'hover:text-white'}`}
+        >
+          
+          <IoTrash size={16} />
+        </button>
       </div>
     </>
   );
