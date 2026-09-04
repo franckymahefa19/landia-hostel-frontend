@@ -13,6 +13,8 @@ import { FaEdit, FaEye, FaSearch, FaTrash } from "react-icons/fa";
 import { IoAdd } from "react-icons/io5";
 import { ViewChambre } from "./components/ViewChambre";
 import { DeleteAlert } from "../components/DeleteAlert";
+import { useOpen } from "@/context/OpenViewContext";
+import { ChambreType } from "@/utils/ChambreType";
 
 export const descriptions = [
   "Gérez efficacement l'ensemble de vos chambres",
@@ -20,7 +22,7 @@ export const descriptions = [
   "Consultez leur disponibilité, suivez leur état en temps réel",
 ];
 
-const fakeChambre = [
+export const fakeChambre: ChambreType[] = [
   {
     nom: "B10",
     type: "luxe",
@@ -53,8 +55,35 @@ const fakeChambre = [
   },
 ];
 
+type OnDeleteType = {
+  isOpen: boolean;
+  data: ChambreType | null;
+};
+
 const Chambres = () => {
   const router = useRouter();
+
+  const { isOpen, onOpen, onClose } = useOpen();
+  const [activeChambre, setActiveChambre] = useState<ChambreType | null>(null);
+
+  const handleOpenDetails = (res: ChambreType) => {
+    setActiveChambre(res);
+    onOpen();
+  };
+
+  const handleCloseDetails = () => {
+    onClose();
+    setActiveChambre(null);
+  };
+
+  const [openDelete, setOpenDelete] = useState<OnDeleteType>({
+    isOpen: false,
+    data: null,
+  });
+
+  const deleteChambre = () => {
+    alert(`Chambre ${openDelete.data?.nom} supprimé`);
+  };
 
   const [currentPage, setCurrentPage] = useState<number>(1);
   const totalPages = 8;
@@ -138,24 +167,20 @@ const Chambres = () => {
               </div>
 
               <div className="flex justify-center items-center gap-2">
-                <ViewChambre
-                  trigger={
-                    <Tooltip>
-                      <TooltipTrigger
-                        render={
-                          <FaEye
-                            size={12}
-                            className="opacity-15 group-hover:opacity-100 transition-all duration-700 text-muted-foreground group-hover:text-green-500 cursor-pointer"
-                          />
-                        }
+                <Tooltip>
+                  <TooltipTrigger
+                    render={
+                      <FaEye
+                        onClick={() => handleOpenDetails(chambre)}
+                        size={12}
+                        className="opacity-15 group-hover:opacity-100 transition-all duration-700 text-muted-foreground group-hover:text-green-500 cursor-pointer"
                       />
-                      <TooltipContent>
-                        <p className="text-[10px]">Voir détails</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  }
-                  chambre={chambre}
-                />
+                    }
+                  />
+                  <TooltipContent>
+                    <p className="text-[10px]">Voir détails</p>
+                  </TooltipContent>
+                </Tooltip>
 
                 <Tooltip>
                   <TooltipTrigger
@@ -171,26 +196,42 @@ const Chambres = () => {
                   </TooltipContent>
                 </Tooltip>
 
-                <DeleteAlert
-                  trigger={
-                    <Tooltip>
-                      <TooltipTrigger
-                        render={
-                          <FaTrash
-                            size={12}
-                            className="opacity-15 group-hover:opacity-100 transition-all duration-700 text-muted-foreground group-hover:text-destructive cursor-pointer"
-                          />
+                <Tooltip>
+                  <TooltipTrigger
+                    render={
+                      <FaTrash
+                        onClick={() =>
+                          setOpenDelete({ isOpen: true, data: chambre })
                         }
+                        size={12}
+                        className="opacity-15 group-hover:opacity-100 transition-all duration-700 text-muted-foreground group-hover:text-destructive cursor-pointer"
                       />
-                      <TooltipContent>
-                        <p className="text-[10px]">Supprimer</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  }
-                />
+                    }
+                  />
+                  <TooltipContent>
+                    <p className="text-[10px]">Supprimer</p>
+                  </TooltipContent>
+                </Tooltip>
               </div>
             </div>
           ))}
+
+          {activeChambre && (
+            <ViewChambre
+              chambre={activeChambre}
+              open={isOpen}
+              onOpenChange={(open) => {
+                if (!open) handleCloseDetails();
+              }}
+            />
+          )}
+          <DeleteAlert
+            onActive={deleteChambre}
+            open={openDelete.isOpen}
+            onOpenChange={(open) => {
+              if (!open) setOpenDelete({ isOpen: false, data: null });
+            }}
+          />
         </div>
       </div>
 

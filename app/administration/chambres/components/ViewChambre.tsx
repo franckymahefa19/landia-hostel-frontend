@@ -10,6 +10,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { ChambreType } from "@/utils/ChambreType";
 import Image from "next/image";
 import { useState } from "react";
 
@@ -21,17 +22,18 @@ const FAKE_IMAGES = [
 ];
 
 export function ViewChambre({
-  trigger,
   chambre,
+  open,
+  onOpenChange,
 }: {
-  trigger: React.ReactElement;
-  chambre: any;
+  chambre: ChambreType;
+   open: boolean;
+  onOpenChange: (open: boolean) => void;
 }) {
   const [selectedImage, setSelectedImage] = useState<string>(FAKE_IMAGES[0]);
 
   return (
-    <Sheet>
-      <SheetTrigger>{trigger}</SheetTrigger>
+    <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="overflow-y-auto">
         <SheetHeader>
           <SheetTitle>Detail du chambre</SheetTitle>

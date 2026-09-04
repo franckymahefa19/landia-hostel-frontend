@@ -50,7 +50,7 @@ export function AppSidebar() {
   const pathname = usePathname();
   console.log(pathname);
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar collapsible="icon" className="z-9999">
       <SidebarHeader className="p-0 mt-6">
         {open ? (
           <motion.div

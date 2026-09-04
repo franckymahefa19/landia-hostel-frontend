@@ -16,6 +16,7 @@ import rawData from "@/data/clients.json";
 import { ClientType } from "@/utils/ClientType";
 import { ViewClient } from "./components/ViewClient";
 import Image from "next/image";
+import { useOpen } from "@/context/OpenViewContext";
 
 const clients: ClientType[] = rawData as ClientType[];
 
@@ -26,8 +27,35 @@ export const clientdescriptions = [
 ];
 
 const ITEMS_PER_PAGE = 5;
+
+type OnDeleteType = {
+  isOpen: boolean;
+  data: ClientType | null;
+};
 const Clients = () => {
   const router = useRouter();
+
+  const { isOpen, onOpen, onClose } = useOpen();
+  const [activeClient, setActiveClient] = useState<ClientType | null>(null);
+
+  const handleOpenDetails = (res: ClientType) => {
+    setActiveClient(res);
+    onOpen();
+  };
+
+  const handleCloseDetails = () => {
+    onClose();
+    setActiveClient(null);
+  };
+
+  const [openDelete, setOpenDelete] = useState<OnDeleteType>({
+    isOpen: false,
+    data: null,
+  });
+
+  const deleteClient = () => {
+    alert(`Client ${openDelete.data?.nom} supprimé`);
+  };
 
   const [currentPage, setCurrentPage] = useState<number>(1);
 
@@ -35,7 +63,6 @@ const Clients = () => {
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
   const currentItems = clients.slice(startIndex, endIndex);
-
 
   return (
     <div>
@@ -105,7 +132,12 @@ const Clients = () => {
             >
               <div className="text-sm text-foreground/70 group-hover:text-foreground transition-colors duration-300">
                 <div className="rounded-full relative bg-border overflow-hidden w-12 h-12">
-                  <Image alt="client" src={client.image} fill className="object-cover" />
+                  <Image
+                    alt="client"
+                    src={client.image}
+                    fill
+                    className="object-cover"
+                  />
                 </div>
               </div>
               <div className="text-sm text-foreground/70 group-hover:text-foreground transition-colors duration-300">
@@ -115,28 +147,26 @@ const Clients = () => {
                 {client.prenoms}
               </div>
               <div className="text-sm text-foreground/70 group-hover:text-foreground transition-colors duration-300">
-                {client.adresse.length > 20 ? `${client.adresse.slice(0, 20)}...` : client.adresse}
+                {client.adresse.length > 20
+                  ? `${client.adresse.slice(0, 20)}...`
+                  : client.adresse}
               </div>
 
               <div className="flex justify-center items-center gap-2">
-                <ViewClient
-                  trigger={
-                    <Tooltip>
-                      <TooltipTrigger
-                        render={
-                          <FaEye
-                            size={12}
-                            className="opacity-15 group-hover:opacity-100 transition-all duration-700 text-muted-foreground group-hover:text-green-500 cursor-pointer"
-                          />
-                        }
+                <Tooltip>
+                  <TooltipTrigger
+                    render={
+                      <FaEye
+                        onClick={() => handleOpenDetails(client)}
+                        size={12}
+                        className="opacity-15 group-hover:opacity-100 transition-all duration-700 text-muted-foreground group-hover:text-green-500 cursor-pointer"
                       />
-                      <TooltipContent>
-                        <p className="text-[10px]">Voir détails</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  }
-                  client={client}
-                />
+                    }
+                  />
+                  <TooltipContent>
+                    <p className="text-[10px]">Voir détails</p>
+                  </TooltipContent>
+                </Tooltip>
 
                 <Tooltip>
                   <TooltipTrigger
@@ -152,26 +182,39 @@ const Clients = () => {
                   </TooltipContent>
                 </Tooltip>
 
-                <DeleteAlert
-                  trigger={
-                    <Tooltip>
-                      <TooltipTrigger
-                        render={
-                          <FaTrash
-                            size={12}
-                            className="opacity-15 group-hover:opacity-100 transition-all duration-700 text-muted-foreground group-hover:text-destructive cursor-pointer"
-                          />
-                        }
+                <Tooltip>
+                  <TooltipTrigger
+                    render={
+                      <FaTrash
+                      onClick={()=>setOpenDelete({isOpen: true, data: client})}
+                        size={12}
+                        className="opacity-15 group-hover:opacity-100 transition-all duration-700 text-muted-foreground group-hover:text-destructive cursor-pointer"
                       />
-                      <TooltipContent>
-                        <p className="text-[10px]">Supprimer</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  }
-                />
+                    }
+                  />
+                  <TooltipContent>
+                    <p className="text-[10px]">Supprimer</p>
+                  </TooltipContent>
+                </Tooltip>
               </div>
             </div>
           ))}
+          {activeClient && (
+            <ViewClient
+              client={activeClient}
+              open={isOpen}
+              onOpenChange={(open) => {
+                if (!open) handleCloseDetails();
+              }}
+            />
+          )}
+          <DeleteAlert
+            onActive={deleteClient}
+            open={openDelete.isOpen}
+            onOpenChange={(open) => {
+              if (!open) setOpenDelete({ isOpen: false, data: null });
+            }}
+          />
         </div>
       </div>
       <div className="my-4">
