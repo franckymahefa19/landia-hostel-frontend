@@ -31,9 +31,6 @@ export function GetDateDialog({
         <DialogContent className="sm:max-w-sm">
           <DialogHeader>
             <DialogTitle>Sélectionner une date</DialogTitle>
-            <DialogDescription>
-              Sélectionner une période pour voir les réservations associés
-            </DialogDescription>
           </DialogHeader>
           <div>
             <label
@@ -68,7 +65,7 @@ export function GetDateDialog({
             <DialogClose render={<Button variant="outline">Retour</Button>} />
             <Button
               type="submit"
-              disabled={!periode.du || !periode.au}
+              disabled={!periode.du}
               onClick={() => {
                 setOpen(false);
                 getPeriode(periode);

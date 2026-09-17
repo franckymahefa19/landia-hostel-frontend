@@ -15,44 +15,12 @@ import { ViewChambre } from "./components/ViewChambre";
 import { DeleteAlert } from "../components/DeleteAlert";
 import { useOpen } from "@/context/OpenViewContext";
 import { ChambreType } from "@/utils/ChambreType";
+import { fakeChambre } from "@/data/fakeChambre";
 
 export const descriptions = [
   "Gérez efficacement l'ensemble de vos chambres",
   "Ajoutez, modifiez et organisez vos chambres.",
   "Consultez leur disponibilité, suivez leur état en temps réel",
-];
-
-export const fakeChambre: ChambreType[] = [
-  {
-    nom: "B10",
-    type: "luxe",
-    etat: "libre",
-  },
-  {
-    nom: "B10",
-    type: "luxe",
-    etat: "libre",
-  },
-  {
-    nom: "B10",
-    type: "luxe",
-    etat: "libre",
-  },
-  {
-    nom: "B10",
-    type: "luxe",
-    etat: "libre",
-  },
-  {
-    nom: "B10",
-    type: "luxe",
-    etat: "libre",
-  },
-  {
-    nom: "B10",
-    type: "luxe",
-    etat: "libre",
-  },
 ];
 
 type OnDeleteType = {

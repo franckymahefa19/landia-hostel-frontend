@@ -27,6 +27,7 @@ import { Pagination } from "@/components/Pagination";
 import { ReservationType } from "@/utils/ReservationType";
 import { useOpen } from "@/context/OpenViewContext";
 import { PerChambreList } from "./components/PerChambreList";
+import { AddReservation } from "./components/AddReservation";
 
 export const reservdescriptions = [
   "Gérez efficacement l'ensemble de vos réservations",
@@ -40,9 +41,9 @@ type PeriodeType = {
 };
 
 type OnDeleteType = {
-  isOpen: boolean,
-  data: ReservationType | null
-}
+  isOpen: boolean;
+  data: ReservationType | null;
+};
 
 const ITEMS_PER_PAGE = 5;
 
@@ -63,17 +64,16 @@ const Reservations = () => {
     setActiveReservation(null);
   };
 
-   const [openDelete, setOpenDelete] = useState<OnDeleteType>({
-      isOpen: false,
-      data: null
-    })
+  const [openDelete, setOpenDelete] = useState<OnDeleteType>({
+    isOpen: false,
+    data: null,
+  });
 
-    const deleteReservation = () => {
-      alert(`Réservation du ${openDelete.data?.dateDebut} supprimé`)
-    }
+  const deleteReservation = () => {
+    alert(`Réservation du ${openDelete.data?.dateDebut} supprimé`);
+  };
 
-    const [chambreList, setChambreList] = useState<boolean>(false)
-
+  const [chambreList, setChambreList] = useState<boolean>(false);
 
   const [periode, setPeriode] = useState<PeriodeType>({
     debut: "",
@@ -105,12 +105,19 @@ const Reservations = () => {
   const endIndex = startIndex + ITEMS_PER_PAGE;
   const currentItems = reservations.slice(startIndex, endIndex);
 
+  const [openAdd, setOpenAdd] = useState<boolean>(false);
+
   return (
     <div className={`max-w-[1100px] mx-auto`}>
+      {chambreList && (
+        <PerChambreList open={chambreList} onOpenChange={setChambreList} />
+      )}
 
-      {
-        chambreList && <PerChambreList open={chambreList} onOpenChange={setChambreList} />
-      }
+      <AddReservation
+        open={openAdd}
+        onOpenChange={() => setOpenAdd(!open)}
+        onClose={() => setOpenAdd(false)}
+      />
 
       <TextHeading title="réservations" descriptions={reservdescriptions} />
       <div className="mt-8">
@@ -123,6 +130,7 @@ const Reservations = () => {
         </h2>
         <div className="flex flex-col sm:flex-row flex-wrap items-start sm:items-center justify-around text-xs gap-2">
           <button
+            onClick={()=>setOpenAdd(true)}
             className="rounded-full px-3 py-2 bg-primary text-primary-foreground flex justify-center items-center gap-3 cursor-pointer
            hover:bg-principal active:scale-95 transition-all duration-300 w-full sm:w-auto"
           >
@@ -139,16 +147,16 @@ const Reservations = () => {
             />
           </div>
           <div
-            onClick={()=>setChambreList(true)}
+            onClick={() => setChambreList(true)}
             className="rounded-md border border-border flex items-center justify-center py-2.5 px-3 gap-4 cursor-pointer w-full sm:w-auto
           hover:bg-primary/80 hover:text-primary-foreground hover:border-primary-foreground active:scale-95 transition-all duration-300"
           >
             <FaBed className="w-4 h-4" />
             <p>Par chambre</p>
           </div>
-          <div className="flex items-center gap-[10px] w-full sm:w-auto justify-center">
+          <div className="flex items-center gap-[10px] w-full sm:w-auto justify-center flex-wrap">
             <div
-              className="border border-border rounded flex justify-center items-center px-2.5 py-2 relative z-50 gap-5 cursor-pointer min-w-[100px] flex-1
+              className="border border-border rounded flex justify-center items-center px-2.5 py-2 relative z-50 gap-5 cursor-pointer min-w-[170px] flex-1
               hover:bg-primary/80 hover:text-primary-foreground hover:border-primary-foreground active:scale-95 transition-all duration-300"
               onClick={() => handleDateShow(debRef)}
             >
@@ -169,7 +177,7 @@ const Reservations = () => {
             </div>
 
             <div
-              className="border border-border rounded flex justify-center items-center px-2.5 py-2 relative z-50 gap-5 cursor-pointer min-w-[100px] flex-1
+              className="border border-border rounded flex justify-center items-center px-2.5 py-2 relative z-50 gap-5 cursor-pointer min-w-[170px]  flex-1
               hover:bg-primary/80 hover:text-primary-foreground hover:border-primary-foreground active:scale-95 transition-all duration-300"
               onClick={handleFin}
             >
@@ -264,7 +272,7 @@ const Reservations = () => {
                     <TooltipTrigger
                       render={
                         <FaEye
-                        onClick={() => handleOpenDetails(res)}
+                          onClick={() => handleOpenDetails(res)}
                           size={12}
                           className="opacity-15 group-hover:opacity-100 transition-all duration-700 text-muted-foreground group-hover:text-green-500 cursor-pointer"
                         />
@@ -289,20 +297,22 @@ const Reservations = () => {
                     </TooltipContent>
                   </Tooltip>
 
-                      <Tooltip>
-                        <TooltipTrigger
-                          render={
-                            <FaTrash
-                            onClick={()=>setOpenDelete({isOpen: true, data: res})}
-                              size={12}
-                              className="opacity-15 group-hover:opacity-100 transition-all duration-700 text-muted-foreground group-hover:text-destructive cursor-pointer"
-                            />
+                  <Tooltip>
+                    <TooltipTrigger
+                      render={
+                        <FaTrash
+                          onClick={() =>
+                            setOpenDelete({ isOpen: true, data: res })
                           }
+                          size={12}
+                          className="opacity-15 group-hover:opacity-100 transition-all duration-700 text-muted-foreground group-hover:text-destructive cursor-pointer"
                         />
-                        <TooltipContent>
-                          <p className="text-[10px]">Supprimer</p>
-                        </TooltipContent>
-                      </Tooltip>
+                      }
+                    />
+                    <TooltipContent>
+                      <p className="text-[10px]">Supprimer</p>
+                    </TooltipContent>
+                  </Tooltip>
                 </div>
               </div>
             ))}
@@ -316,9 +326,13 @@ const Reservations = () => {
               />
             )}
 
-            <DeleteAlert onActive={deleteReservation} open={openDelete.isOpen} onOpenChange={(open)=>{
-              if(!open) setOpenDelete({isOpen: false, data: null})
-            }}/>
+            <DeleteAlert
+              onActive={deleteReservation}
+              open={openDelete.isOpen}
+              onOpenChange={(open) => {
+                if (!open) setOpenDelete({ isOpen: false, data: null });
+              }}
+            />
           </div>
         </div>
         <Pagination

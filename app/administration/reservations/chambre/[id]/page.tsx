@@ -1,7 +1,7 @@
 "use client";
 
 import { Calendar } from "@/components/ui/calendar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { DateRange } from "react-day-picker";
 import { reservations } from "@/data/reservation";
 import CardContainer from "@/components/Card-container";
@@ -27,28 +27,13 @@ import {
 } from "@/components/ui/tooltip";
 import { useOpen } from "@/context/OpenViewContext";
 import { ViewReservation } from "../../components/ViewReservation";
+import { formatDate, isDateBetween } from "@/utils/IsDateBetween";
 
 const results: ReservationType[] = data as ReservationType[];
 
 type OnDeleteType = {
   isOpen: boolean;
   data: ReservationType | null;
-};
-
-const formatDate = (date: Date): string => {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-
-  return `${year}-${month}-${day}`;
-};
-
-const isDateBetween = (date: Date, dateDebut: string, dateFin: string) => {
-  const current = new Date(`${formatDate(date)}T00:00:00`);
-  const debut = new Date(`${dateDebut}T00:00:00`);
-  const fin = new Date(`${dateFin}T00:00:00`);
-
-  return current >= debut && current <= fin;
 };
 
 const ITEMS_PER_PAGE = 5;
@@ -94,6 +79,16 @@ export default function MonCalendrier() {
     alert(`Réservation du ${openDelete.data?.dateDebut} supprimé`);
   };
 
+  useEffect(()=>{
+    if(!range?.from || !range.to){
+      return
+    }
+    setPeriode({
+      du: formatDate(range.from),
+      au: formatDate(range.to)
+    })
+  }, [range])
+
   return (
     <div>
       <CardContainer>
@@ -131,9 +126,9 @@ export default function MonCalendrier() {
                 ),
             }}
             modifiersClassNames={{
-              confirmed: `${!range?.from && !range?.to && "!bg-green-400 dark:!bg-green-700 !text-white hover:!bg-transparent"}`,
+              confirmed: `${"!bg-green-400 dark:!bg-green-700 !text-white hover:!bg-transparent"}`,
 
-              pending: `${!range?.from && !range?.to && "!bg-yellow-400 dark:!bg-yellow-700 !text-white hover:!bg-transparent"}`,
+              pending: `${"!bg-yellow-400 dark:!bg-yellow-700 !text-white hover:!bg-transparent"}`,
             }}
             className="w-full"
           />

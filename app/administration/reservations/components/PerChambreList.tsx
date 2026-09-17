@@ -11,8 +11,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { fakeChambre } from "../../chambres/page";
+import { fakeChambre } from "@/data/fakeChambre";
 import { useRouter } from "next/navigation";
+import { IoSearch } from "react-icons/io5";
 
 export function PerChambreList({
   open,
@@ -35,7 +36,11 @@ export function PerChambreList({
         <DialogHeader>
           <DialogTitle>Sélectionner une chambre</DialogTitle>
         </DialogHeader>
-        <ul className="space-y-2 mt-6">
+        <div className="relative w-full rounded-full bg-muted text-primary mt-4">
+          <IoSearch className="w-4 h-4 absolute top-[50%] translate-y-[-50%] ml-3"/>
+          <input type="text" className="w-full py-2.5 px-3 pl-10 border-none outline-none" placeholder="Rechercher..." />
+        </div>
+        <ul className="space-y-2">
           {chambres.map((chambre, index) => {
             return (
               <li
