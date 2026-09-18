@@ -15,16 +15,17 @@ import Image from "next/image";
 import { useState } from "react";
 
 export function ViewClient({
-  trigger,
+  open,
+  onOpenChange,
   client,
 }: {
-  trigger: React.ReactElement;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
   client: ClientType;
 }) {
 
   return (
-    <Sheet>
-      <SheetTrigger>{trigger}</SheetTrigger>
+    <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="overflow-y-auto">
         <SheetHeader>
           <SheetTitle>Detail du client</SheetTitle>

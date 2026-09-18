@@ -37,7 +37,7 @@ const Navbar = () => {
   console.log("theme : ", theme);
 
   return (
-    <div className="w-full h-[70px] flex justify-between md:justify-end items-center px-4 md:px-12 gap-3 fixed top-0 left-0 right-0 backdrop-blur-3xl">
+    <div className="w-full h-[70px] flex justify-between md:justify-end items-center px-4 md:px-12 gap-3 fixed top-0 left-0 right-0 backdrop-blur-3xl z-50">
       <SidebarTrigger className="md:hidden" />
       <div className="flex items-center gap-3">
         <DropdownMenu>

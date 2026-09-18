@@ -1,44 +1,36 @@
 "use client";
 
-import TextHeading from "@/components/TextHeading";
-import React, { useRef, useState } from "react";
+import { Calendar } from "@/components/ui/calendar";
+import { useEffect, useState } from "react";
+import type { DateRange } from "react-day-picker";
+import { reservations } from "@/data/reservation";
+import CardContainer from "@/components/Card-container";
 import {
-  FaDoorClosed,
+  FaCalendar,
   FaEdit,
   FaEye,
   FaPlus,
   FaSearch,
   FaTrash,
 } from "react-icons/fa";
-import { HiHome } from "react-icons/hi2";
-import { IoBedOutline, IoCalendar } from "react-icons/io5";
-import Card from "./components/Card";
-import CardContainer from "@/components/Card-container";
-import { FaBed, FaBedPulse } from "react-icons/fa6";
+import { IoTrash } from "react-icons/io5";
+import { useParams } from "next/navigation";
+import { GetDateDialog } from "../../components/getDateDialog";
+import { Pagination } from "@/components/Pagination";
+import { DeleteAlert } from "@/app/administration/components/DeleteAlert";
 import data from "@/data/reservations.json";
-import { ViewReservation } from "./components/ViewReservation";
+import { ReservationType } from "@/utils/ReservationType";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { DeleteAlert } from "../components/DeleteAlert";
-import { Pagination } from "@/components/Pagination";
-import { ReservationType } from "@/utils/ReservationType";
 import { useOpen } from "@/context/OpenViewContext";
-import { PerChambreList } from "./components/PerChambreList";
-import { AddReservation } from "./components/AddReservation";
+import { ViewReservation } from "../../components/ViewReservation";
+import { formatDate, isDateBetween } from "@/utils/IsDateBetween";
+import { AddReservation } from "../../components/AddReservation";
 
-export const reservdescriptions = [
-  "Gérez efficacement l'ensemble de vos réservations",
-  "Ajoutez, modifiez et organisez vos réservations.",
-  "Consultez les différentes status de réservations",
-];
-
-type PeriodeType = {
-  debut: string;
-  fin: string;
-};
+const results: ReservationType[] = data as ReservationType[];
 
 type OnDeleteType = {
   isOpen: boolean;
@@ -47,10 +39,25 @@ type OnDeleteType = {
 
 const ITEMS_PER_PAGE = 5;
 
-const reservations: ReservationType[] = data as ReservationType[];
-
-const Reservations = () => {
+export default function MonCalendrier() {
+  const { id } = useParams();
   const { isOpen, onOpen, onClose } = useOpen();
+
+  const [range, setRange] = useState<DateRange | undefined>();
+  const [month, setMonth] = useState<Date>(new Date());
+
+  const [periode, setPeriode] = useState({
+    du: "",
+    au: "",
+  });
+
+  const [currentPage, setCurrentPage] = useState<number>(1);
+
+  const totalPages = Math.ceil(results.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const currentItems = results.slice(startIndex, endIndex);
+
   const [activeReservation, setActiveReservation] =
     useState<ReservationType | null>(null);
 
@@ -73,64 +80,111 @@ const Reservations = () => {
     alert(`Réservation du ${openDelete.data?.dateDebut} supprimé`);
   };
 
-  const [chambreList, setChambreList] = useState<boolean>(false);
-
-  const [periode, setPeriode] = useState<PeriodeType>({
-    debut: "",
-    fin: "",
-  });
-  const debRef = useRef<HTMLInputElement>(null);
-  const finRef = useRef<HTMLInputElement>(null);
-
-  const handleDateShow = (ref: any) => {
-    if (ref.current) {
-      if ("showPicker" in HTMLInputElement.prototype) {
-        ref.current.showPicker();
-      } else {
-        ref.current.focus();
-      }
+  useEffect(() => {
+    if (!range?.from || !range.to) {
+      return;
     }
-  };
-
-  const handleFin = () => {
-    if (periode.debut !== "") {
-      handleDateShow(finRef);
-    }
-  };
-
-  const [currentPage, setCurrentPage] = useState<number>(1);
-
-  const totalPages = Math.ceil(reservations.length / ITEMS_PER_PAGE);
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const endIndex = startIndex + ITEMS_PER_PAGE;
-  const currentItems = reservations.slice(startIndex, endIndex);
+    setPeriode({
+      du: formatDate(range.from),
+      au: formatDate(range.to),
+    });
+  }, [range]);
 
   const [openAdd, setOpenAdd] = useState<boolean>(false);
 
   return (
-    <div className={`max-w-[1100px] mx-auto`}>
-      {chambreList && (
-        <PerChambreList open={chambreList} onOpenChange={setChambreList} />
-      )}
-
+    <div>
       <AddReservation
         open={openAdd}
         onOpenChange={() => setOpenAdd(!open)}
         onClose={() => setOpenAdd(false)}
       />
+      <CardContainer>
+        <h1 className="mb-4 text-sm font-bold">
+          Les réservations du chambre {id}
+        </h1>
+        <div className="w-[50%] h-[300px] overflow-auto scrollbar-none mx-auto">
+          <Calendar
+            mode="range"
+            selected={range}
+            onSelect={setRange}
+            month={month}
+            onMonthChange={setMonth}
+            modifiers={{
+              confirmed: (date) =>
+                reservations.some(
+                  (reservation) =>
+                    reservation.status === "confirmed" &&
+                    isDateBetween(
+                      date,
+                      reservation.dateDebut,
+                      reservation.dateFin,
+                    ),
+                ),
 
-      <TextHeading title="réservations" descriptions={reservdescriptions} />
-      <div className="mt-8">
-        <Card />
-      </div>
+              pending: (date) =>
+                reservations.some(
+                  (reservation) =>
+                    reservation.status === "pending" &&
+                    isDateBetween(
+                      date,
+                      reservation.dateDebut,
+                      reservation.dateFin,
+                    ),
+                ),
+            }}
+            modifiersClassNames={{
+              confirmed: `${"!bg-green-400 dark:!bg-green-700 !text-white hover:!bg-transparent"}`,
+
+              pending: `${"!bg-yellow-400 dark:!bg-yellow-700 !text-white hover:!bg-transparent"}`,
+            }}
+            className="w-full"
+          />
+        </div>
+        <div className="mt-4 flex w-full justify-center items-center gap-5">
+          <GetDateDialog
+            periode={periode}
+            setPeriode={setPeriode}
+            trigger={
+              <button
+                className="flex justify-center items-center px-3 py-2 border border-primary/70 cursor-pointer rounded
+             text-primary gap-2 text-xs  hover:text-primary-foreground hover:bg-primary transition-colors duration-300 ease-in-out"
+              >
+                <FaCalendar />
+                Sélectionner une date
+              </button>
+            }
+            getPeriode={(periode) => {
+              setRange({
+                from: new Date(periode.du),
+                to: new Date(periode.au),
+              });
+              setMonth(new Date(periode.du));
+            }}
+          />
+          <button
+            onClick={() => {
+              setRange({ from: undefined, to: undefined });
+              setPeriode({ du: "", au: "" });
+            }}
+            disabled={range?.from === undefined}
+            className="flex justify-center items-center px-3 py-2 border border-destructive/70 cursor-pointer rounded
+             text-destructive gap-2 text-xs  hover:text-primary-foreground hover:bg-destructive transition-colors duration-300 ease-in-out
+             disabled:bg-muted disabled:text-muted-foreground disabled:border-muted disabled:cursor-no-drop"
+          >
+            <IoTrash />
+            Nettoyer
+          </button>
+        </div>
+      </CardContainer>
 
       <CardContainer>
         <h2 className="font-bold text-primary text-sm mb-6 ml-2">
           Liste des réservations
         </h2>
-        <div className="flex flex-col sm:flex-row flex-wrap items-start sm:items-center justify-around text-xs gap-2">
+        <div className="flex flex-col sm:flex-row flex-wrap items-start sm:items-center justify-end text-xs gap-2">
           <button
-            onClick={()=>setOpenAdd(true)}
+            onClick={() =>setOpenAdd(true)}
             className="rounded-full px-3 py-2 bg-primary text-primary-foreground flex justify-center items-center gap-3 cursor-pointer
            hover:bg-principal active:scale-95 transition-all duration-300 w-full sm:w-auto"
           >
@@ -143,60 +197,8 @@ const Reservations = () => {
             <input
               type="text"
               className="w-full py-2.5 pl-10 outline-none border-none text-primary"
-              placeholder="Nom du chambre, client..."
+              placeholder="Nom client..."
             />
-          </div>
-          <div
-            onClick={() => setChambreList(true)}
-            className="rounded-md border border-border flex items-center justify-center py-2.5 px-3 gap-4 cursor-pointer w-full sm:w-auto
-          hover:bg-primary/80 hover:text-primary-foreground hover:border-primary-foreground active:scale-95 transition-all duration-300"
-          >
-            <FaBed className="w-4 h-4" />
-            <p>Par chambre</p>
-          </div>
-          <div className="flex items-center gap-[10px] w-full sm:w-auto justify-center flex-wrap">
-            <div
-              className="border border-border rounded flex justify-center items-center px-2.5 py-2 relative z-50 gap-5 cursor-pointer min-w-[170px] flex-1
-              hover:bg-primary/80 hover:text-primary-foreground hover:border-primary-foreground active:scale-95 transition-all duration-300"
-              onClick={() => handleDateShow(debRef)}
-            >
-              <IoCalendar className="w-4 h-4" />
-              <input
-                ref={debRef}
-                type="date"
-                className="opacity-0 absolute inset-0"
-                value={periode.debut}
-                onChange={(e) =>
-                  setPeriode({
-                    ...periode,
-                    debut: e.target.value,
-                  })
-                }
-              />
-              <span>{periode.debut !== "" ? periode.debut : "début"}</span>
-            </div>
-
-            <div
-              className="border border-border rounded flex justify-center items-center px-2.5 py-2 relative z-50 gap-5 cursor-pointer min-w-[170px]  flex-1
-              hover:bg-primary/80 hover:text-primary-foreground hover:border-primary-foreground active:scale-95 transition-all duration-300"
-              onClick={handleFin}
-            >
-              <IoCalendar className="w-4 h-4" />
-              <input
-                ref={finRef}
-                type="date"
-                min={periode.debut}
-                className="opacity-0 absolute inset-0"
-                value={periode.fin}
-                onChange={(e) =>
-                  setPeriode({
-                    ...periode,
-                    fin: e.target.value,
-                  })
-                }
-              />
-              <span>{periode.fin !== "" ? periode.fin : "fin"}</span>
-            </div>
           </div>
         </div>
         <div className="w-full overflow-x-auto px-2 pb-2 mt-4 mb-4">
@@ -343,6 +345,4 @@ const Reservations = () => {
       </CardContainer>
     </div>
   );
-};
-
-export default Reservations;
+}

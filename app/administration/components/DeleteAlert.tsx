@@ -10,12 +10,9 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 
-export function DeleteAlert({trigger}:{trigger: React.ReactElement}) {
+export function DeleteAlert({open, onOpenChange, onActive}:{open: boolean, onOpenChange: (open: boolean)=>void, onActive: ()=>void}) {
   return (
-    <AlertDialog>
-      <AlertDialogTrigger>
-        {trigger}
-      </AlertDialogTrigger>
+    <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>En êtes-vous sure ?</AlertDialogTitle>
@@ -25,7 +22,9 @@ export function DeleteAlert({trigger}:{trigger: React.ReactElement}) {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Annuler</AlertDialogCancel>
-          <AlertDialogAction className="bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive hover:text-primary-foreground">Continuer</AlertDialogAction>
+          <AlertDialogAction
+          onClick={onActive}
+           className="bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive hover:text-primary-foreground">Continuer</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
