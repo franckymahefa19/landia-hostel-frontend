@@ -16,44 +16,35 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ClipLoader } from "react-spinners";
+import { createClient } from "@/services/api/client";
+import { getApiErrorMessage } from "@/utils/GetApiError";
 
 export const clientSchema = z.object({
-  nom: z
-    .string({ error: "Le nom est requis" })
-    .min(1, "Le nom ne peut pas être vide")
-    .trim(),
+  nom: z.string().min(1, "Le nom ne peut pas être vide").trim(),
 
-  prenoms: z.string(),
+  prenoms: z.string({ error: "Le prénom est requis" }),
 
-  adresse: z
-    .string({ error: "L'adresse est requise" })
-    .min(1, "L'adresse ne doit pas être vide")
-    .trim(),
+  adresse: z.string().min(1, "L'adresse ne doit pas être vide").trim(),
 
   tel: z
-    .string({ error: "Le téléphone est requis" })
+    .string()
     .regex(
       /^\+?[0-9\s-]{8,}$/,
       "Le numéro de téléphone doit être dans un format valide",
     ),
 
   email: z
-    .string({ error: "L'email est requis" })
+    .string()
     .email("L'adresse email n'est pas valide")
     .toLowerCase()
     .trim(),
 
-  sexe: z
-    .string({ error: "Le sexe est requis" })
-    .min(1, "Le sexe ne peut pas être vide")
-    .trim(),
+  sexe: z.string().min(1, "Le sexe ne peut pas être vide").trim(),
 
   nationalite: z
     .string()
     .min(2, "La nationalité doit contenir au moins 2 caractères")
     .trim(),
-
-  image: z.string({ error: "L'URL de l'image est requise" }),
 });
 
 type ClientForm = z.infer<typeof clientSchema>;
@@ -79,7 +70,6 @@ const AjoutClient = () => {
       email: "",
       tel: "",
       nationalite: "",
-      image: "",
       adresse: "",
     },
   });
@@ -105,7 +95,24 @@ const AjoutClient = () => {
   const submitData = async (data: ClientForm) => {
     await new Promise((resolve) => setTimeout(resolve, 3000));
     console.log("Données du formulaire :", data);
-    alert("client enregistré !!");
+    const formData = new FormData();
+    formData.append("nom", data.nom);
+    formData.append("prenom", data.prenoms ?? "");
+    formData.append("adresse", data.adresse);
+    formData.append("tel", data.tel);
+    formData.append("email", data.email);
+    formData.append("sexe", data.sexe);
+    formData.append("nationalite", data.nationalite);
+    formData.append("image", file);
+
+    try {
+      const response = await createClient(formData);
+      console.log("création réussi  : ", response);
+      alert("enregistrement avec succès !!!");
+    } catch (error) {
+      console.log(getApiErrorMessage(error));
+      alert("création échoué !!!");
+    }
   };
 
   return (
@@ -225,11 +232,11 @@ const AjoutClient = () => {
                   </SelectTrigger>
 
                   <SelectContent>
-                    <SelectItem value="Homme" className="py-3 px-3 text-xs">
+                    <SelectItem value="homme" className="py-3 px-3 text-xs">
                       Homme
                     </SelectItem>
 
-                    <SelectItem value="Femme" className="py-3 px-3 text-xs">
+                    <SelectItem value="femme" className="py-3 px-3 text-xs">
                       Femme
                     </SelectItem>
                   </SelectContent>

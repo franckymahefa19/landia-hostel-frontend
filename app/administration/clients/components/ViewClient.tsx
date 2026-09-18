@@ -10,9 +10,14 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { ClientInterface } from "@/types/ClientInterface";
 import { ClientType } from "@/utils/ClientType";
 import Image from "next/image";
-import { useState } from "react";
+import rawData from "@/data/clients.json";
+import { defaultUser } from "../page";
+
+
+const fakeClients: ClientType[] = rawData as ClientType[];
 
 export function ViewClient({
   open,
@@ -21,7 +26,7 @@ export function ViewClient({
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  client: ClientType;
+  client: ClientInterface;
 }) {
 
   return (
@@ -34,9 +39,10 @@ export function ViewClient({
           <h2 className="text-muted-foreground text-xs">Image</h2>
           <div className="w-full h-[150px] rounded-md relative mt-2 overflow-hidden">
             <Image
-              src={client.image}
+              src={client.image ? `${process.env.NEXT_PUBLIC_API_URL}${client.image}` : defaultUser}
               fill
               alt="client"
+              unoptimized
               className="object-cover"
             />
           </div>
@@ -47,7 +53,7 @@ export function ViewClient({
 
           <div className="mt-4 px-4 rounded-md shadow py-3">
             <h2 className="text-muted-foreground text-xs">Prénoms</h2>
-            <p className="text-right text-sm mt-2">{client.prenoms}</p>
+            <p className="text-right text-sm mt-2">{client.prenom}</p>
           </div>
 
           <div className="mt-4 px-4 rounded-md shadow py-3">
