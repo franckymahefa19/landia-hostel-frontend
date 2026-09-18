@@ -23,7 +23,6 @@ import { ChambreType } from "@/utils/ChambreType";
 import { GetDateDialog } from "./getDateDialog";
 import { ResumeReservation } from "./ResumeReservation";
 
-
 type PeriodeType = {
   du: string;
   au: string;
@@ -50,29 +49,40 @@ export function AddReservation({
   const [openResume, setOpenResume] = useState<boolean>(false);
 
   const [periode, setPeriode] = useState<PeriodeType>({
-      du: "",
-      au: "",
-    });
+    du: "",
+    au: "",
+  });
 
-   useEffect(()=>{
-      if(!range?.from || !range.to){
-        return
-      }
-      setPeriode({
-        du: formatDate(range.from),
-        au: formatDate(range.to)
-      })
-    }, [range])
-
-    const submit = () => {
-        if(periode.du !== "" && periode.au !== "" && selectedChambre !== null && selectedClient !== null){
-            setOpenResume(true)
-            onClose()
-        }
-        else {
-            alert("Informations manquantes !")
-        }
+  useEffect(() => {
+    if (!range?.from || !range.to) {
+      return;
     }
+    setPeriode({
+      du: formatDate(range.from),
+      au: formatDate(range.to),
+    });
+  }, [range]);
+
+  const submit = () => {
+    if (
+      periode.du !== "" &&
+      periode.au !== "" &&
+      selectedChambre !== null &&
+      selectedClient !== null
+    ) {
+      setOpenResume(true);
+      onClose();
+    } else {
+      alert("Informations manquantes !");
+    }
+  };
+
+  const clear = () => {
+    setSelectedChambre(null);
+    setSelectedClient(null);
+    setPeriode({ du: "", au: "" });
+    setRange({ from: undefined, to: undefined });
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -92,13 +102,14 @@ export function AddReservation({
         setSelectedChambre={setSelectedChambre}
       />
 
-      <ResumeReservation 
+      <ResumeReservation
         open={openResume}
         onOpenChange={() => setOpenResume(!openResume)}
         onClose={() => setOpenResume(false)}
         periode={periode}
         selectedChambre={selectedChambre}
         selectedClient={selectedClient}
+        clear={clear}
       />
 
       <form>
@@ -209,10 +220,7 @@ export function AddReservation({
           <DialogFooter>
             <DialogClose
               onClick={() => {
-                setSelectedChambre(null);
-                setSelectedClient(null);
-                setPeriode({ du: "", au: "" });
-                setRange({ from: undefined, to: undefined });
+                clear();
               }}
               render={<Button variant="outline">Annuler</Button>}
             />

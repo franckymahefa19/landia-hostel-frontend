@@ -28,6 +28,7 @@ import {
 import { useOpen } from "@/context/OpenViewContext";
 import { ViewReservation } from "../../components/ViewReservation";
 import { formatDate, isDateBetween } from "@/utils/IsDateBetween";
+import { AddReservation } from "../../components/AddReservation";
 
 const results: ReservationType[] = data as ReservationType[];
 
@@ -79,18 +80,25 @@ export default function MonCalendrier() {
     alert(`Réservation du ${openDelete.data?.dateDebut} supprimé`);
   };
 
-  useEffect(()=>{
-    if(!range?.from || !range.to){
-      return
+  useEffect(() => {
+    if (!range?.from || !range.to) {
+      return;
     }
     setPeriode({
       du: formatDate(range.from),
-      au: formatDate(range.to)
-    })
-  }, [range])
+      au: formatDate(range.to),
+    });
+  }, [range]);
+
+  const [openAdd, setOpenAdd] = useState<boolean>(false);
 
   return (
     <div>
+      <AddReservation
+        open={openAdd}
+        onOpenChange={() => setOpenAdd(!open)}
+        onClose={() => setOpenAdd(false)}
+      />
       <CardContainer>
         <h1 className="mb-4 text-sm font-bold">
           Les réservations du chambre {id}
@@ -176,6 +184,7 @@ export default function MonCalendrier() {
         </h2>
         <div className="flex flex-col sm:flex-row flex-wrap items-start sm:items-center justify-end text-xs gap-2">
           <button
+            onClick={() =>setOpenAdd(true)}
             className="rounded-full px-3 py-2 bg-primary text-primary-foreground flex justify-center items-center gap-3 cursor-pointer
            hover:bg-principal active:scale-95 transition-all duration-300 w-full sm:w-auto"
           >

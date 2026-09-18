@@ -23,7 +23,8 @@ export function ResumeReservation({
   onClose,
   periode,
   selectedClient,
-  selectedChambre
+  selectedChambre,
+  clear
 }: {
   open: boolean;
   onOpenChange: () => void;
@@ -31,6 +32,7 @@ export function ResumeReservation({
   periode: PeriodeType;
   selectedClient: ClientType | null;
   selectedChambre: ChambreType | null;
+  clear: () => void
 }) {
   return (
     <Dialog  open={open} onOpenChange={onOpenChange}>
@@ -78,10 +80,14 @@ export function ResumeReservation({
         </div>
         <DialogFooter>
           <DialogClose
-          onClick={()=>onClose()}
+          onClick={()=>{
+            onClose()
+            clear()
+          }}
           render={<Button variant="outline">Annuler</Button>} />
           <Button onClick={()=>{
             alert("Enregistré !!!")
+            clear()
             onClose()
           }}>Enregistrer</Button>
         </DialogFooter>

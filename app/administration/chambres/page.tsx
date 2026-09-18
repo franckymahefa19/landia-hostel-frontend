@@ -16,6 +16,7 @@ import { DeleteAlert } from "../components/DeleteAlert";
 import { useOpen } from "@/context/OpenViewContext";
 import { ChambreType } from "@/utils/ChambreType";
 import { fakeChambre } from "@/data/fakeChambre";
+import { useChambre } from "@/hooks/useChambre";
 
 export const descriptions = [
   "Gérez efficacement l'ensemble de vos chambres",
@@ -30,6 +31,22 @@ type OnDeleteType = {
 
 const Chambres = () => {
   const router = useRouter();
+
+  
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const totalPages = 8;
+
+  const {
+    chambres,
+    meta,
+    loading,
+    error,
+  } = useChambre({
+    limit: 3,
+    page: currentPage,
+  })
+
+  console.log(chambres);
 
   const { isOpen, onOpen, onClose } = useOpen();
   const [activeChambre, setActiveChambre] = useState<ChambreType | null>(null);
@@ -53,8 +70,6 @@ const Chambres = () => {
     alert(`Chambre ${openDelete.data?.nom} supprimé`);
   };
 
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const totalPages = 8;
 
   return (
     <div>
