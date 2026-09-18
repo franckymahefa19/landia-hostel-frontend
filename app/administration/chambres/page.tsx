@@ -17,6 +17,7 @@ import { useOpen } from "@/context/OpenViewContext";
 import { ChambreType } from "@/utils/ChambreType";
 import { fakeChambre } from "@/data/fakeChambre";
 import { useChambre } from "@/hooks/useChambre";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export const descriptions = [
   "Gérez efficacement l'ensemble de vos chambres",
@@ -29,24 +30,17 @@ type OnDeleteType = {
   data: ChambreType | null;
 };
 
+const LIMIT = 5;
+
 const Chambres = () => {
   const router = useRouter();
 
-  
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const totalPages = 8;
 
-  const {
-    chambres,
-    meta,
-    loading,
-    error,
-  } = useChambre({
-    limit: 3,
+  const { chambres, meta, loading, error } = useChambre({
+    limit: LIMIT,
     page: currentPage,
-  })
-
-  console.log(chambres);
+  });
 
   const { isOpen, onOpen, onClose } = useOpen();
   const [activeChambre, setActiveChambre] = useState<ChambreType | null>(null);
@@ -69,7 +63,6 @@ const Chambres = () => {
   const deleteChambre = () => {
     alert(`Chambre ${openDelete.data?.nom} supprimé`);
   };
-
 
   return (
     <div>
@@ -121,10 +114,25 @@ const Chambres = () => {
 
         {/* Rows */}
         <div className="min-w-[700px] space-y-3">
-          {fakeChambre.map((chambre, index) => (
-            <div
-              key={index}
-              className="
+          {
+            error ? <div className="w-full h-[100px] flex justify-center items-center">
+              <p className="text-principal text-xs">Chargement des chambres échoués ...</p>
+            </div>
+            :
+          
+          loading ? (
+            <>
+              <Skeleton className="h-12 w-full" />
+              <Skeleton className="h-12 w-full" />
+              <Skeleton className="h-12 w-full" />
+              <Skeleton className="h-12 w-full" />
+              <Skeleton className="h-12 w-full" />
+            </>
+          ) : (
+            chambres.map((chambre, index) => (
+              <div
+                key={index}
+                className="
                         grid grid-cols-4
                         items-center
                         bg-card/70
@@ -138,66 +146,67 @@ const Chambres = () => {
                        duration-300
                         group
                       "
-            >
-              <div className="text-sm text-foreground/70 group-hover:text-foreground transition-colors duration-300">
-                {chambre.nom}
-              </div>
-              <div className="text-sm text-foreground/70 group-hover:text-foreground transition-colors duration-300">
-                {chambre.type}
-              </div>
-              <div className="text-sm text-foreground/70 group-hover:text-foreground transition-colors duration-300">
-                {chambre.etat}
-              </div>
+              >
+                <div className="text-sm text-foreground/70 group-hover:text-foreground transition-colors duration-300">
+                  {chambre.nom}
+                </div>
+                <div className="text-sm text-foreground/70 group-hover:text-foreground transition-colors duration-300">
+                  {chambre.type}
+                </div>
+                <div className="text-sm text-foreground/70 group-hover:text-foreground transition-colors duration-300">
+                  {chambre.etat}
+                </div>
 
-              <div className="flex justify-center items-center gap-2">
-                <Tooltip>
-                  <TooltipTrigger
-                    render={
-                      <FaEye
-                        onClick={() => handleOpenDetails(chambre)}
-                        size={12}
-                        className="opacity-15 group-hover:opacity-100 transition-all duration-700 text-muted-foreground group-hover:text-green-500 cursor-pointer"
-                      />
-                    }
-                  />
-                  <TooltipContent>
-                    <p className="text-[10px]">Voir détails</p>
-                  </TooltipContent>
-                </Tooltip>
+                <div className="flex justify-center items-center gap-2">
+                  <Tooltip>
+                    <TooltipTrigger
+                      render={
+                        <FaEye
+                          onClick={() => handleOpenDetails(chambre)}
+                          size={12}
+                          className="opacity-15 group-hover:opacity-100 transition-all duration-700 text-muted-foreground group-hover:text-green-500 cursor-pointer"
+                        />
+                      }
+                    />
+                    <TooltipContent>
+                      <p className="text-[10px]">Voir détails</p>
+                    </TooltipContent>
+                  </Tooltip>
 
-                <Tooltip>
-                  <TooltipTrigger
-                    render={
-                      <FaEdit
-                        size={12}
-                        className="opacity-15 group-hover:opacity-100 transition-all duration-700 text-muted-foreground group-hover:text-blue-500 cursor-pointer"
-                      />
-                    }
-                  />
-                  <TooltipContent>
-                    <p className="text-[10px]">Modifier</p>
-                  </TooltipContent>
-                </Tooltip>
+                  <Tooltip>
+                    <TooltipTrigger
+                      render={
+                        <FaEdit
+                          size={12}
+                          className="opacity-15 group-hover:opacity-100 transition-all duration-700 text-muted-foreground group-hover:text-blue-500 cursor-pointer"
+                        />
+                      }
+                    />
+                    <TooltipContent>
+                      <p className="text-[10px]">Modifier</p>
+                    </TooltipContent>
+                  </Tooltip>
 
-                <Tooltip>
-                  <TooltipTrigger
-                    render={
-                      <FaTrash
-                        onClick={() =>
-                          setOpenDelete({ isOpen: true, data: chambre })
-                        }
-                        size={12}
-                        className="opacity-15 group-hover:opacity-100 transition-all duration-700 text-muted-foreground group-hover:text-destructive cursor-pointer"
-                      />
-                    }
-                  />
-                  <TooltipContent>
-                    <p className="text-[10px]">Supprimer</p>
-                  </TooltipContent>
-                </Tooltip>
+                  <Tooltip>
+                    <TooltipTrigger
+                      render={
+                        <FaTrash
+                          onClick={() =>
+                            setOpenDelete({ isOpen: true, data: chambre })
+                          }
+                          size={12}
+                          className="opacity-15 group-hover:opacity-100 transition-all duration-700 text-muted-foreground group-hover:text-destructive cursor-pointer"
+                        />
+                      }
+                    />
+                    <TooltipContent>
+                      <p className="text-[10px]">Supprimer</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
 
           {activeChambre && (
             <ViewChambre
@@ -221,7 +230,7 @@ const Chambres = () => {
       <div className="mt-4">
         <Pagination
           currentPage={currentPage}
-          totalPages={totalPages}
+          totalPages={meta?.totalPages ?? 0}
           onPageChange={(page) => setCurrentPage(page)}
         />
       </div>

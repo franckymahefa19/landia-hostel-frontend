@@ -17,8 +17,13 @@ import { ClientType } from "@/utils/ClientType";
 import { ViewClient } from "./components/ViewClient";
 import Image from "next/image";
 import { useOpen } from "@/context/OpenViewContext";
+import { useClient } from "@/hooks/useClient";
+import { Skeleton } from "@/components/ui/skeleton";
+import { ClientInterface } from "@/types/ClientInterface";
+import { getApiErrorMessage } from "@/utils/GetApiError";
+import { deleteClient } from "@/services/api/client";
 
-const clients: ClientType[] = rawData as ClientType[];
+const fakeClients: ClientType[] = rawData as ClientType[];
 
 export const clientdescriptions = [
   "Gérez efficacement l'ensemble de vos clients",
@@ -26,19 +31,23 @@ export const clientdescriptions = [
   "Consultez leur réservations, suivez leur flux en temps réel",
 ];
 
+export const defaultUser = "https://plus.unsplash.com/premium_vector-1728553012443-3cf619e7579d?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+
 const ITEMS_PER_PAGE = 5;
 
 type OnDeleteType = {
   isOpen: boolean;
-  data: ClientType | null;
+  data: ClientInterface | null;
 };
 const Clients = () => {
   const router = useRouter();
 
   const { isOpen, onOpen, onClose } = useOpen();
-  const [activeClient, setActiveClient] = useState<ClientType | null>(null);
+  const [activeClient, setActiveClient] = useState<ClientInterface | null>(
+    null,
+  );
 
-  const handleOpenDetails = (res: ClientType) => {
+  const handleOpenDetails = (res: ClientInterface) => {
     setActiveClient(res);
     onOpen();
   };
@@ -53,16 +62,27 @@ const Clients = () => {
     data: null,
   });
 
-  const deleteClient = () => {
-    alert(`Client ${openDelete.data?.nom} supprimé`);
-  };
 
   const [currentPage, setCurrentPage] = useState<number>(1);
 
-  const totalPages = Math.ceil(clients.length / ITEMS_PER_PAGE);
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const endIndex = startIndex + ITEMS_PER_PAGE;
-  const currentItems = clients.slice(startIndex, endIndex);
+  const { clients, meta, loading, error, refetch } = useClient({
+    limit: ITEMS_PER_PAGE,
+    page: currentPage,
+  });
+
+  
+  const deleteClt = async () => {
+    if (openDelete.data) {
+      try {
+        await deleteClient(openDelete.data?.id);
+        alert("suppression éffectué !")
+        refetch()
+        setOpenDelete({ isOpen: false, data: null });
+      } catch (error) {
+        console.log(getApiErrorMessage(error));
+      }
+    }
+  };
 
   return (
     <div>
@@ -71,7 +91,7 @@ const Clients = () => {
         <div className="flex items-end gap-3 text-sm">
           <h2 className="text-primary">Toutes les clients</h2>
           <p className="text-[10px] text-muted-foreground/80">
-            2 005 résultats
+            {meta?.total} résultats
           </p>
         </div>
         <div className="flex gap-2 sm:gap-3 self-center lg:self-end mb-3 lg:mb-0">
@@ -112,93 +132,114 @@ const Clients = () => {
 
         {/* Rows */}
         <div className="min-w-[700px] space-y-3">
-          {currentItems.map((client, index) => (
-            <div
-              key={index}
-              className="
-                                  grid grid-cols-5
-                                  items-center
-                                  bg-card/70
-                                  hover:bg-card
-                                  rounded-lg
-                                  px-4 py-2
-                                 shadow-[0_1px_4px_rgba(0,0,0,0.16)]
-                                 dark:shadow-[0_1px_4px_rgba(255,255,255,0.16)]
-                                 hover:shadow-md
-                                 transition-all
-                                 duration-300
-                                  group
-                                "
-            >
-              <div className="text-sm text-foreground/70 group-hover:text-foreground transition-colors duration-300">
-                <div className="rounded-full relative bg-border overflow-hidden w-12 h-12">
-                  <Image
-                    alt="client"
-                    src={client.image}
-                    fill
-                    className="object-cover"
-                  />
+          {error ? (
+            <div className="w-full h-[100px] flex justify-center items-center">
+              <p className="text-principal text-xs">{error} ...</p>
+            </div>
+          ) : loading ? (
+            <>
+              <Skeleton className="h-12 w-full" />
+              <Skeleton className="h-12 w-full" />
+              <Skeleton className="h-12 w-full" />
+              <Skeleton className="h-12 w-full" />
+              <Skeleton className="h-12 w-full" />
+            </>
+          ) : clients.length === 0 ? (
+            <div className="w-full h-[100px] flex justify-center items-center">
+              <p className="text-principal text-xs">Aucun client trouvé !</p>
+            </div>
+          ) : (
+            clients.map((client, index) => (
+              <div
+                key={index}
+                className="
+                        grid grid-cols-5
+                        items-center
+                        bg-card/70
+                        hover:bg-card
+                        rounded-lg
+                        px-4 py-2
+                        shadow-[0_1px_4px_rgba(0,0,0,0.16)]
+                        dark:shadow-[0_1px_4px_rgba(255,255,255,0.16)]
+                        hover:shadow-md
+                        transition-all
+                        duration-300
+                        group
+                      "
+              >
+                <div className="text-sm text-foreground/70 group-hover:text-foreground transition-colors duration-300">
+                  <div className="rounded-full relative bg-border overflow-hidden w-12 h-12">
+                    <Image
+                      alt="client"
+                      src={client.image ? `${process.env.NEXT_PUBLIC_API_URL}${client.image}` : defaultUser}
+                      fill
+                      unoptimized
+                      className="object-cover"
+                    />
+                  </div>
+                </div>
+                <div className="text-sm text-foreground/70 group-hover:text-foreground transition-colors duration-300">
+                  {client.nom}
+                </div>
+                <div className="text-sm text-foreground/70 group-hover:text-foreground transition-colors duration-300">
+                  {client.prenom}
+                </div>
+                <div className="text-sm text-foreground/70 group-hover:text-foreground transition-colors duration-300">
+                  {client.adresse.length > 20
+                    ? `${client.adresse.slice(0, 20)}...`
+                    : client.adresse}
+                </div>
+
+                <div className="flex justify-center items-center gap-2">
+                  <Tooltip>
+                    <TooltipTrigger
+                      render={
+                        <FaEye
+                          onClick={() => handleOpenDetails(client)}
+                          size={12}
+                          className="opacity-15 group-hover:opacity-100 transition-all duration-700 text-muted-foreground group-hover:text-green-500 cursor-pointer"
+                        />
+                      }
+                    />
+                    <TooltipContent>
+                      <p className="text-[10px]">Voir détails</p>
+                    </TooltipContent>
+                  </Tooltip>
+
+                  <Tooltip>
+                    <TooltipTrigger
+                      render={
+                        <FaEdit
+                          size={12}
+                          className="opacity-15 group-hover:opacity-100 transition-all duration-700 text-muted-foreground group-hover:text-blue-500 cursor-pointer"
+                        />
+                      }
+                    />
+                    <TooltipContent>
+                      <p className="text-[10px]">Modifier</p>
+                    </TooltipContent>
+                  </Tooltip>
+
+                  <Tooltip>
+                    <TooltipTrigger
+                      render={
+                        <FaTrash
+                          onClick={() =>
+                            setOpenDelete({ isOpen: true, data: client })
+                          }
+                          size={12}
+                          className="opacity-15 group-hover:opacity-100 transition-all duration-700 text-muted-foreground group-hover:text-destructive cursor-pointer"
+                        />
+                      }
+                    />
+                    <TooltipContent>
+                      <p className="text-[10px]">Supprimer</p>
+                    </TooltipContent>
+                  </Tooltip>
                 </div>
               </div>
-              <div className="text-sm text-foreground/70 group-hover:text-foreground transition-colors duration-300">
-                {client.nom}
-              </div>
-              <div className="text-sm text-foreground/70 group-hover:text-foreground transition-colors duration-300">
-                {client.prenoms}
-              </div>
-              <div className="text-sm text-foreground/70 group-hover:text-foreground transition-colors duration-300">
-                {client.adresse.length > 20
-                  ? `${client.adresse.slice(0, 20)}...`
-                  : client.adresse}
-              </div>
-
-              <div className="flex justify-center items-center gap-2">
-                <Tooltip>
-                  <TooltipTrigger
-                    render={
-                      <FaEye
-                        onClick={() => handleOpenDetails(client)}
-                        size={12}
-                        className="opacity-15 group-hover:opacity-100 transition-all duration-700 text-muted-foreground group-hover:text-green-500 cursor-pointer"
-                      />
-                    }
-                  />
-                  <TooltipContent>
-                    <p className="text-[10px]">Voir détails</p>
-                  </TooltipContent>
-                </Tooltip>
-
-                <Tooltip>
-                  <TooltipTrigger
-                    render={
-                      <FaEdit
-                        size={12}
-                        className="opacity-15 group-hover:opacity-100 transition-all duration-700 text-muted-foreground group-hover:text-blue-500 cursor-pointer"
-                      />
-                    }
-                  />
-                  <TooltipContent>
-                    <p className="text-[10px]">Modifier</p>
-                  </TooltipContent>
-                </Tooltip>
-
-                <Tooltip>
-                  <TooltipTrigger
-                    render={
-                      <FaTrash
-                      onClick={()=>setOpenDelete({isOpen: true, data: client})}
-                        size={12}
-                        className="opacity-15 group-hover:opacity-100 transition-all duration-700 text-muted-foreground group-hover:text-destructive cursor-pointer"
-                      />
-                    }
-                  />
-                  <TooltipContent>
-                    <p className="text-[10px]">Supprimer</p>
-                  </TooltipContent>
-                </Tooltip>
-              </div>
-            </div>
-          ))}
+            ))
+          )}
           {activeClient && (
             <ViewClient
               client={activeClient}
@@ -209,7 +250,7 @@ const Clients = () => {
             />
           )}
           <DeleteAlert
-            onActive={deleteClient}
+            onActive={deleteClt}
             open={openDelete.isOpen}
             onOpenChange={(open) => {
               if (!open) setOpenDelete({ isOpen: false, data: null });
@@ -220,7 +261,7 @@ const Clients = () => {
       <div className="my-4">
         <Pagination
           currentPage={currentPage}
-          totalPages={totalPages}
+          totalPages={meta?.totalPages ?? 0}
           onPageChange={(page) => setCurrentPage(page)}
         />
       </div>

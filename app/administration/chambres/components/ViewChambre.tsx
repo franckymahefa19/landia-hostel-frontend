@@ -80,9 +80,7 @@ export function ViewChambre({
 
           <div className="mt-4 px-4 rounded-md shadow py-3 mb-3">
             <h2 className="text-muted-foreground text-xs">Description</h2>
-            <p className="text-right text-sm mt-2">Lorem ipsum dolor sit amet consectetur adipisicing elit. 
-              Animi explicabo eligendi, itaque voluptate laudantium quas nobis aliquam suscipit temporibus assumenda! Rem suscipit possimus cum.
-               Praesentium.</p>
+            <p className="text-right text-sm mt-2">{chambre.description}</p>
           </div>
         </div>
       </SheetContent>
