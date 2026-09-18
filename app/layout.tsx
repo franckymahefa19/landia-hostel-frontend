@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist_Mono, Lora } from "next/font/google";
 import "./globals.css";
+import { OpenProvider } from "@/context/OpenViewContext";
+import { MainBody } from "@/components/MainBody";
 
 const lora = Lora({
   variable: "--font-lora",
@@ -17,6 +19,8 @@ export const metadata: Metadata = {
   description: "Gestion de l'hotel Landia",
 };
 
+
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -25,9 +29,12 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={`${lora.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <OpenProvider>
+        <MainBody>{children}</MainBody>
+      </OpenProvider>
     </html>
   );
 }
