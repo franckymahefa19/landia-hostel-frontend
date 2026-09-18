@@ -8,7 +8,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaEdit, FaEye, FaSearch, FaTrash } from "react-icons/fa";
 import { IoAdd } from "react-icons/io5";
 import { ViewChambre } from "./components/ViewChambre";
@@ -18,6 +18,9 @@ import { ChambreType } from "@/utils/ChambreType";
 import { fakeChambre } from "@/data/fakeChambre";
 import { useChambre } from "@/hooks/useChambre";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ChambreInterface } from "@/types/ChambreInteface";
+import { deleteChambre } from "@/services/api/chambre";
+import { getApiErrorMessage } from "@/utils/GetApiError";
 
 export const descriptions = [
   "Gérez efficacement l'ensemble de vos chambres",
@@ -27,7 +30,7 @@ export const descriptions = [
 
 type OnDeleteType = {
   isOpen: boolean;
-  data: ChambreType | null;
+  data: ChambreInterface | null;
 };
 
 const LIMIT = 5;
@@ -35,17 +38,29 @@ const LIMIT = 5;
 const Chambres = () => {
   const router = useRouter();
 
+  const [search, setSearch] = useState<string>("");
+  const [searchBoundary, setSearchBoundary] = useState<string>("");
+
+  useEffect(() => {
+    setTimeout(() => {
+      setSearchBoundary(search);
+    }, 500);
+  }, [search]);
+
   const [currentPage, setCurrentPage] = useState<number>(1);
 
-  const { chambres, meta, loading, error } = useChambre({
+  const { chambres, meta, loading, error, refetch } = useChambre({
     limit: LIMIT,
     page: currentPage,
+    search: searchBoundary
   });
 
   const { isOpen, onOpen, onClose } = useOpen();
-  const [activeChambre, setActiveChambre] = useState<ChambreType | null>(null);
+  const [activeChambre, setActiveChambre] = useState<ChambreInterface | null>(
+    null,
+  );
 
-  const handleOpenDetails = (res: ChambreType) => {
+  const handleOpenDetails = (res: ChambreInterface) => {
     setActiveChambre(res);
     onOpen();
   };
@@ -60,8 +75,17 @@ const Chambres = () => {
     data: null,
   });
 
-  const deleteChambre = () => {
-    alert(`Chambre ${openDelete.data?.nom} supprimé`);
+  const delChambre = async () => {
+    if (openDelete.data) {
+      try {
+        await deleteChambre(openDelete.data.id);
+        alert("suppression éffectué !");
+        refetch();
+        setOpenDelete({ isOpen: false, data: null });
+      } catch (error) {
+        console.log(getApiErrorMessage(error));
+      }
+    }
   };
 
   return (
@@ -90,6 +114,8 @@ const Chambres = () => {
               type="text"
               className="py-3 px-1 flex-1 outline-none min-w-0 text-xs"
               placeholder="Entrer le nom de la chambre"
+              value={search}
+              onChange={e=>setSearch(e.target.value)}
             />
           </div>
         </div>
@@ -114,19 +140,17 @@ const Chambres = () => {
 
         {/* Rows */}
         <div className="min-w-[700px] space-y-3">
-          {
-            error ? <div className="w-full h-[100px] flex justify-center items-center">
-              <p className="text-principal text-xs">Chargement des chambres échoués ...</p>
+          {error ? (
+            <div className="w-full h-[100px] flex justify-center items-center">
+              <p className="text-principal text-xs">
+                Chargement des chambres échoués ...
+              </p>
             </div>
-            :
-          
-          loading ? (
+          ) : loading ? (
             <>
-              <Skeleton className="h-12 w-full" />
-              <Skeleton className="h-12 w-full" />
-              <Skeleton className="h-12 w-full" />
-              <Skeleton className="h-12 w-full" />
-              <Skeleton className="h-12 w-full" />
+              <Skeleton className="h-12 w-full rounded-xl" />
+              <Skeleton className="h-12 w-full rounded-xl" />
+              <Skeleton className="h-12 w-full rounded-xl" />
             </>
           ) : (
             chambres.map((chambre, index) => (
@@ -175,6 +199,11 @@ const Chambres = () => {
 
                   <Tooltip>
                     <TooltipTrigger
+                      onClick={() =>
+                        router.push(
+                          `/administration/chambres/update-chambre/${chambre.id}`,
+                        )
+                      }
                       render={
                         <FaEdit
                           size={12}
@@ -218,7 +247,7 @@ const Chambres = () => {
             />
           )}
           <DeleteAlert
-            onActive={deleteChambre}
+            onActive={delChambre}
             open={openDelete.isOpen}
             onOpenChange={(open) => {
               if (!open) setOpenDelete({ isOpen: false, data: null });

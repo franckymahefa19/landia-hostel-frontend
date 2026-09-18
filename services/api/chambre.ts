@@ -15,7 +15,7 @@ export const getChambreById = async (id: number): Promise<ChambreInterface> => {
 };
 
 export const createChambre = async (
-  data: Omit<ChambreInterface, "id">
+  data: FormData,
 ): Promise<ChambreInterface> => {
   const response = await api.post<ChambreInterface>("/chambre", data);
 

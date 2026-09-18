@@ -25,7 +25,7 @@ export const createClient = async (
 
 export const updateClient = async (
   id: number,
-  data: Partial<Omit<ClientInterface, "id">>
+  data: FormData
 ): Promise<ClientInterface> => {
   const response = await api.patch<ClientInterface>(`/client/${id}`, data);
 
