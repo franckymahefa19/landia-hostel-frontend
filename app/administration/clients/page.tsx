@@ -8,7 +8,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaEdit, FaEye, FaSearch, FaTrash } from "react-icons/fa";
 import { IoAdd } from "react-icons/io5";
 import { DeleteAlert } from "../components/DeleteAlert";
@@ -31,7 +31,8 @@ export const clientdescriptions = [
   "Consultez leur réservations, suivez leur flux en temps réel",
 ];
 
-export const defaultUser = "https://plus.unsplash.com/premium_vector-1728553012443-3cf619e7579d?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+export const defaultUser =
+  "https://plus.unsplash.com/premium_vector-1728553012443-3cf619e7579d?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
 
 const ITEMS_PER_PAGE = 5;
 
@@ -62,21 +63,29 @@ const Clients = () => {
     data: null,
   });
 
+  const [search, setSearch] = useState<string>("");
+  const [searchBoundary, setSearchBoundary] = useState<string>("");
+
+  useEffect(() => {
+    setTimeout(() => {
+      setSearchBoundary(search);
+    }, 500);
+  }, [search]);
 
   const [currentPage, setCurrentPage] = useState<number>(1);
 
   const { clients, meta, loading, error, refetch } = useClient({
     limit: ITEMS_PER_PAGE,
     page: currentPage,
+    search: searchBoundary
   });
 
-  
   const deleteClt = async () => {
     if (openDelete.data) {
       try {
         await deleteClient(openDelete.data?.id);
-        alert("suppression éffectué !")
-        refetch()
+        alert("suppression éffectué !");
+        refetch();
         setOpenDelete({ isOpen: false, data: null });
       } catch (error) {
         console.log(getApiErrorMessage(error));
@@ -108,6 +117,8 @@ const Clients = () => {
               type="text"
               className="py-3 px-1 flex-1 outline-none min-w-0 text-xs"
               placeholder="Entrer le nom du client"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
             />
           </div>
         </div>
@@ -141,8 +152,6 @@ const Clients = () => {
               <Skeleton className="h-12 w-full" />
               <Skeleton className="h-12 w-full" />
               <Skeleton className="h-12 w-full" />
-              <Skeleton className="h-12 w-full" />
-              <Skeleton className="h-12 w-full" />
             </>
           ) : clients.length === 0 ? (
             <div className="w-full h-[100px] flex justify-center items-center">
@@ -171,7 +180,11 @@ const Clients = () => {
                   <div className="rounded-full relative bg-border overflow-hidden w-12 h-12">
                     <Image
                       alt="client"
-                      src={client.image ? `${process.env.NEXT_PUBLIC_API_URL}${client.image}` : defaultUser}
+                      src={
+                        client.image
+                          ? `${process.env.NEXT_PUBLIC_API_URL}${client.image}`
+                          : defaultUser
+                      }
                       fill
                       unoptimized
                       className="object-cover"
@@ -208,6 +221,11 @@ const Clients = () => {
 
                   <Tooltip>
                     <TooltipTrigger
+                      onClick={() =>
+                        router.push(
+                          `/administration/clients/update-client/${client.id}`,
+                        )
+                      }
                       render={
                         <FaEdit
                           size={12}
