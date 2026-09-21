@@ -1,17 +1,15 @@
 "use client";
 
 import TextHeading from "@/components/TextHeading";
-import { descriptions } from "../page";
+import { descriptions } from "../../page";
 import { useElementSize } from "@/hooks/useElementSize";
 import z from "zod";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { ClipLoader } from "react-spinners";
-import { IoMdAddCircle, IoMdAddCircleOutline } from "react-icons/io";
-import { BiChevronsDown } from "react-icons/bi";
 import { CgChevronDown } from "react-icons/cg";
-import SelectType from "../components/SelectType";
+import SelectType from "../../components/SelectType";
 import {
   Select,
   SelectContent,
@@ -19,9 +17,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import AddImages from "../components/AddImages";
+import AddImages from "../../components/AddImages";
 import { getApiErrorMessage } from "@/utils/GetApiError";
 import { createChambre } from "@/services/api/chambre";
+import { useParams } from "next/navigation";
+import { useOneChambre } from "@/hooks/useOneChambre";
 
 type typeType = {
   id: string;
@@ -45,7 +45,31 @@ const ChambreSchema = z.object({
 });
 
 type ChambreForm = z.infer<typeof ChambreSchema>;
-const AddChambre = () => {
+
+
+
+const UpdateChambre = () => {
+
+  const params = useParams();
+  
+  const {chambre, loading, error} = useOneChambre(Number(params.id));
+
+  useEffect(()=>{
+    setValue("nom", chambre?.nom ?? "")
+    setValue("prix", chambre?.prix ?? 0)
+    setValue("description", chambre?.description ?? "")
+    setValue("etat", chambre?.etat ?? "")
+    setValue("type", chambre?.type ?? "")
+
+     setFocus({
+      nom: Boolean(chambre?.nom),
+      prix: Boolean(chambre?.prix),
+      desc: Boolean(chambre?.description),
+      etat: Boolean(chambre?.etat),
+      type: Boolean(chambre?.type)
+    });
+  }, [chambre])
+
   const { ref, width } = useElementSize<HTMLFormElement>();
   const isMobile = width < 800;
 
@@ -180,9 +204,9 @@ const AddChambre = () => {
         className={`mt-6 max-w-[1000px] mx-auto grid gap-[15px] ${isMobile ? "grid-cols-1" : "grid-cols-[1fr_270px]"} mb-5 sm:mt-20`}
       >
         <div className="rounded-lg bg-card shadow p-4">
-          <h2 className="text-primary text-md">Ajouter une chambre</h2>
+          <h2 className="text-primary text-md">Modifier une chambre</h2>
           <p className="text-[10px] text-muted-foreground">
-            Veuillez remplir les informations
+            Remplacer les informations à modifier
           </p>
 
           <div
@@ -404,7 +428,7 @@ const AddChambre = () => {
                 aria-label="connexion..."
               />
             ) : (
-              "Ajouter"
+              "Modifier"
             )}
           </button>
         </div>
@@ -430,4 +454,4 @@ const AddChambre = () => {
   );
 };
 
-export default AddChambre;
+export default UpdateChambre;
